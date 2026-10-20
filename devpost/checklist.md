@@ -29,7 +29,7 @@ Build mode: fast
   Learner check: Open `http://localhost:5000` — are these the assessments you expect for this month and next, are last year's modules gone, and does the look feel like the "enhanced Moodle" you pictured?
   Commit: `Add dashboard with monthly assessment view`
 
-- [ ] **3. Weights turn into colour-coded priority**
+- [x] **3. Weights turn into colour-coded priority**
   Becomes usable: Click a module, type weights (e.g. 2.5, 30), or mark an item "Doesn't count"; back on the dashboard, rows show green Low / yellow Medium / red High, and excluded items are gone. Weights survive a restart.
   Why now: The second half of the kernel — prioritising by weight — and the first data you save.
   PRD ref: `prd.md > Weights and Priority`, `prd.md > Excluding Non-Contributing Assessments`, `prd.md > The Core Journey` (steps 4–5)

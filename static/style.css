@@ -80,6 +80,22 @@ td.code { color: var(--accent); font-weight: 600; }
   color: var(--high); border: 1px solid var(--high); background: transparent; white-space: nowrap;
 }
 
+/* Module view */
+.page-title { margin: 4px 0 4px; font-size: 24px; font-weight: 600; }
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; overflow-x: auto; margin-top: 16px; }
+form.inline { display: inline-flex; gap: 6px; margin: 0; }
+input[type="number"], input[type="text"], input[type="datetime-local"] {
+  background: var(--bg); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 8px; font: inherit; color-scheme: dark;
+}
+input[type="number"] { width: 72px; }
+button, .button {
+  background: var(--accent); color: #0b1220; border: 0; border-radius: 6px;
+  padding: 5px 12px; font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+button.secondary, .button.secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+button:hover, .button:hover { filter: brightness(1.1); text-decoration: none; }
+
 /* EC / extra-time rows (only shown when the EC button is on) */
 .ec-row td { opacity: .7; }
 .tag-ec { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: var(--panel-2); border: 1px solid var(--border); color: var(--muted); margin-left: 4px; }

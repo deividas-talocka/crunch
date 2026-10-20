@@ -4,11 +4,11 @@
   <h2 class="section-title">Modules</h2>
   <div class="modules">
     {% for m in view.modules %}
-    <div class="module-card">
+    <a class="module-card" href="{{ url_for('module', course_id=m.id) }}">
       <div class="module-code">{{ m.code }}</div>
       <div class="module-title">{{ m.title }}</div>
       <div class="module-left"><strong>{{ m.left }}</strong> left</div>
-    </div>
+    </a>
     {% else %}
     <p class="muted">No current modules found.</p>
     {% endfor %}

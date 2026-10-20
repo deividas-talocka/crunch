@@ -83,6 +83,24 @@ def test_show_ec_includes_labelled_versions():
     assert [r["ec"] for r in october] == [False, True]
 
 
+def test_priority_thresholds():
+    assert tracker.priority(2.5) == "low"
+    assert tracker.priority(10) == "low"
+    assert tracker.priority(30) == "medium"
+    assert tracker.priority(50) == "medium"
+    assert tracker.priority(70) == "high"
+    assert tracker.priority(None) is None
+
+
+def test_weights_and_exclusions_from_notes():
+    notes = {"assessments": {"quiz-1": {"weight": 2.5}, "assign-3": {"weight": 70}, "quiz-5": {"excluded": True}}}
+    view = tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)
+    rows = {r["id"]: r for month in view["months"] for r in month["rows"]}
+    assert rows["quiz-1"]["priority"] == "low"
+    assert rows["assign-3"]["priority"] == "high"
+    assert view["modules"][0]["left"] == 2  # practice quiz no longer counted
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])
