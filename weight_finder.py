@@ -41,10 +41,12 @@ TYPES = [
     ("coursework", re.compile(r"\b(?:cw|coursework)\s*(\d+)?", re.I)),
     ("tutorial", re.compile(r"\btutorials?\b()", re.I)),
 ]
-# Assessments that happen outside Moodle, so the app adds them itself when files mention them.
-OFF_MOODLE = {"exam": "Exam", "viva": "Viva"}
+# Assessments the files mention but Moodle doesn't have: exams and vivas happen outside
+# Moodle; coursework may simply not be released yet. The app adds these itself.
+OFF_MOODLE = {"exam": "Exam", "viva": "Viva", "coursework": "Coursework", "assessment": "Assessment"}
+RELEASED_LATER = {"coursework", "assessment"}  # removed again once Moodle has the real one
 RESCAN_AFTER = 24 * 3600
-SCAN_VERSION = 3  # bump when the finder learns something new, so modules get re-read
+SCAN_VERSION = 4  # bump when the finder learns something new, so modules get re-read
 
 
 def _kind_and_number(text):
@@ -87,7 +89,8 @@ def find_weights(text, source):
                 kind, number = _kind_and_number(context)
             if kind is None or not 0 < percent <= 100:
                 continue
-            label = context.strip(" (:-–|•▪").strip() or kind.title()
+            label = context.strip(" (:-–|•▪").strip()
+            label = re.sub(r"\s+(?:is\s+)?worth$", "", label, flags=re.I) or kind.title()
             if len(label) > 80:
                 label = "…" + label[-80:].split(" ", 1)[-1]  # keep whole words
             month = MONTH.search(context)
@@ -215,35 +218,58 @@ def courses_needing_scan(modules, notes, now=None):
     return due
 
 
+def _is_placeholder_kind(f):
+    return f["kind"] in OFF_MOODLE and not f["combined"]
+
+
 def exams_to_add(course_id, code, unmatched, existing_exams):
-    """Exams and vivas to add for a module whose files mention them - one of each kind,
-    skipping a kind the module already has (added by me or earlier)."""
+    """Assessments the module's files mention that aren't on Moodle (yet): exams and vivas,
+    which never are, and coursework not released yet. One per kind and number, skipping
+    any the module already has (added earlier, or by me)."""
+    best = {}
+    for f in unmatched:
+        if _is_placeholder_kind(f):
+            key = (f["kind"], f["number"])
+            if key not in best or f["percent"] > best[key]["percent"]:
+                best[key] = f
     added = []
-    for kind, title in OFF_MOODLE.items():
-        found = [f for f in unmatched if f["kind"] == kind]
-        if not found or any(e["course_id"] == course_id and e.get("found_kind", "exam") == kind
-                            for e in existing_exams):
+    for (kind, number), f in best.items():
+        if any(e["course_id"] == course_id and e.get("found_kind", "exam") == kind
+               and e.get("found_number") == number for e in existing_exams):
             continue
-        f = max(found, key=lambda e: e["percent"])
+        title = OFF_MOODLE[kind] + (f" {number}" if number else "")
         added.append({
             "course_id": course_id, "name": f"{code} {title}", "close": None, "month": f.get("month"),
             "weight": f["percent"], "weight_source": f["source"],
             "hint": f["label"] if len(f["label"].split()) > 2 else None,  # skip a bare "Examination"
-            "found_kind": kind, "auto": True, "done": False,
+            "found_kind": kind, "found_number": number, "auto": True, "done": False,
         })
     return added
 
 
+def released_placeholders(module_items, exams):
+    """Coursework placeholders whose real assessment has now appeared on Moodle."""
+    on_moodle = {item_kind_and_number(r["name"], r["kind"]) for r in module_items if r["kind"] != "exam"}
+    return [e for e in exams if e.get("auto") and e.get("found_kind") in RELEASED_LATER
+            and ((e["found_kind"], e.get("found_number")) in on_moodle
+                 or (e.get("found_number") is None and any(k == e["found_kind"] for k, _ in on_moodle)))]
+
+
 def _apply(module, findings):
-    """Save matched weights (never over one I typed), any exam the files mention,
-    and the module's findings."""
+    """Save matched weights (never over one I typed), add assessments the files mention
+    that Moodle doesn't have, drop placeholders Moodle now has, and keep the findings."""
     items = [{"id": r["id"], "name": r["name"], "kind": r["kind"], "ec": r["ec"]} for r in module["items"]]
     chosen, unmatched = match(findings, items)
     with storage.lock:
         notes = storage.load_notes()
+        mine = [e for e in notes["exams"] if e["course_id"] == module["id"]]
+        for gone in released_placeholders(module["items"], mine):
+            notes["exams"].remove(gone)
+            notes["assessments"].pop(gone["id"], None)
+            chosen.pop(gone["id"], None)
         for exam in exams_to_add(module["id"], module["code"], unmatched, notes["exams"]):
             storage.add_found_exam(notes, exam)
-        unmatched = [f for f in unmatched if f["kind"] not in OFF_MOODLE]
+        unmatched = [f for f in unmatched if not _is_placeholder_kind(f)]
         for item_id, f in chosen.items():
             note = notes["assessments"].setdefault(item_id, {})
             typed_by_me = note.get("weight") is not None and not note.get("weight_source")

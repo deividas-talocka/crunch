@@ -79,13 +79,30 @@ def test_manual_exam_gets_exam_weight():
 def test_exams_and_vivas_found_in_files_are_added_once():
     _, unmatched = wf.match(wf.find_weights(IN2002_OVERVIEW, "DSA0.pdf"), [])
     added = wf.exams_to_add(7, "IN2002", unmatched, [])
-    assert [(e["name"], e["weight"], e["month"], e["weight_source"]) for e in added] == [
-        ("IN2002 Exam", 70, 1, "DSA0.pdf"), ("IN2002 Viva", 30, None, "DSA0.pdf")]
-    assert "week 10" in added[1]["hint"]
+    assert sorted((e["name"], e["weight"], e["month"] or 0, e["weight_source"]) for e in added) == [
+        ("IN2002 Exam", 70, 1, "DSA0.pdf"), ("IN2002 Viva", 30, 0, "DSA0.pdf")]
+    assert "week 10" in next(e for e in added if e["name"] == "IN2002 Viva")["hint"]
     # already has an exam (added by me, no found_kind) -> only the viva is added
     assert [e["name"] for e in wf.exams_to_add(7, "IN2002", unmatched, [{"course_id": 7}])] == ["IN2002 Viva"]
     _, unmatched = wf.match(wf.find_weights(IN2029_SCHEDULE, "schedule.pdf"), [])
-    assert [(e["name"], e["month"]) for e in wf.exams_to_add(8, "IN2029", unmatched, [])] == [("IN2029 Exam", None)]
+    assert sorted((e["name"], e["weight"]) for e in wf.exams_to_add(8, "IN2029", unmatched, [])) == [
+        ("IN2029 Coursework", 30), ("IN2029 Exam", 70)]
+
+
+def test_unreleased_coursework_placeholder_and_its_removal():
+    findings = wf.find_weights(IN2013_INTRO, "L0.pdf")
+    moodle_items = [{"id": "assign-1", "name": "Coursework 1 (Analysis) Submission Area", "kind": "assign", "ec": False}]
+    _, unmatched = wf.match(findings, moodle_items)
+    added = wf.exams_to_add(5, "IN2013", unmatched, [])
+    assert [(e["name"], e["weight"], e["found_number"]) for e in added] == [("IN2013 Coursework 2", 45, 2)]
+    placeholder = {**added[0], "id": "exam-9"}
+    # still not on Moodle -> kept; once "CW2 (Design) Submission Area" appears -> removed
+    assert wf.released_placeholders(moodle_items, [placeholder]) == []
+    released = moodle_items + [{"id": "assign-2", "name": "CW2 (Design) Submission Area", "kind": "assign", "ec": False}]
+    assert wf.released_placeholders(released, [placeholder]) == [placeholder]
+    # exams are never "released" on Moodle, so they stay
+    exam = {"id": "exam-1", "course_id": 5, "found_kind": "exam", "found_number": None, "auto": True}
+    assert wf.released_placeholders(released, [exam]) == []
 
 
 def test_rescan_rules():

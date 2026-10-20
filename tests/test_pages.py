@@ -53,5 +53,5 @@ def test_pages_render(client, path):
 
 def test_date_to_confirm_section_is_below_the_months(client):
     html = client.get("/").get_data(as_text=True)
-    assert html.index("Upcoming by month") < html.index("Exams — date to confirm")
+    assert html.index("Upcoming by month") < html.index("Coming up — date to confirm")
     assert "Expected January" in html

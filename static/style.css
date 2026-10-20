@@ -44,10 +44,8 @@ a:hover { text-decoration: underline; }
   border-bottom: 1px solid var(--border-soft);
 }
 .brand { font-size: 17px; font-weight: 650; color: var(--text); letter-spacing: .01em; }
-.brand::before {
-  content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 10px;
-  border-radius: 3px; background: var(--accent); box-shadow: 0 0 12px var(--accent); vertical-align: 1px;
-}
+.brand { display: inline-flex; align-items: center; gap: 6px; }
+.brand-logo { width: 26px; height: 26px; margin-right: 4px; filter: drop-shadow(0 0 8px rgba(106, 168, 240, .35)); }
 .brand-sub { font-size: 14px; font-weight: 400; color: var(--muted); }
 a.brand:hover { text-decoration: none; }
 .topbar nav a { margin-left: 8px; padding: 6px 12px; border-radius: 999px; color: var(--muted); }
@@ -191,9 +189,6 @@ button:hover, .button:hover { filter: brightness(1.12); text-decoration: none; }
 .button.active { border-color: var(--accent); color: var(--accent); }
 .module-intro { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .module-intro p { margin: 0; }
-.exam-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; padding: 16px 18px; }
-.exam-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
-.exam-form input[type="text"] { width: 240px; }
 .button.disabled { opacity: .35; cursor: default; filter: none; }
 
 /* EC / extra-time rows (only shown when the EC button is on) */
@@ -201,3 +196,5 @@ button:hover, .button:hover { filter: brightness(1.12); text-decoration: none; }
 .tag-ec { font-size: 11px; padding: 1px 7px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--border); color: var(--muted); margin-left: 6px; }
 
 .tbc-section { margin-top: 8px; }
+
+.tbc-note { margin: -6px 0 12px; font-size: 13px; }

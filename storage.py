@@ -43,26 +43,6 @@ def load_cache():
     return _read(CACHE, None)
 
 
-def add_exam(course_id, name, close_ts, weight):
-    """Save an exam I've added myself (exams aren't on Moodle). With no weight given,
-    use an exam weight the weight finder found in this module's files, if any."""
-    with lock:
-        notes = load_notes()
-        found = [f for f in notes.get("scans", {}).get(str(course_id), {}).get("unmatched", [])
-                 if f["kind"] == "exam"]
-        source = None
-        if weight is None and len({f["percent"] for f in found}) == 1:
-            weight, source = found[0]["percent"], found[0]["source"]
-        exam_id = _next_exam_id(notes)
-        notes["exams"].append({
-            "id": exam_id, "course_id": course_id, "name": name,
-            "close": close_ts, "weight": weight, "done": False,
-        })
-        if source:
-            notes["assessments"][exam_id] = {"weight": weight, "weight_source": source}
-        save_notes(notes)
-
-
 def _next_exam_id(notes):
     return f"exam-{max([int(e['id'].split('-')[1]) for e in notes['exams']] + [0]) + 1}"
 

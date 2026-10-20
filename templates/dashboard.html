@@ -97,7 +97,8 @@
 </section>
 {% if view.exams_tbc %}
 <section class="tbc-section">
-  <h2 class="section-title">Exams — date to confirm</h2>
+  <h2 class="section-title">Coming up — date to confirm</h2>
+  <p class="muted tbc-note">Found in your module files but not dated on Moodle yet. Coursework disappears from here once Moodle posts it.</p>
   <div class="tbc-strip">
     {% for r in view.exams_tbc %}
     <a class="tbc-card" href="{{ url_for('module', course_id=r.module_id) }}">

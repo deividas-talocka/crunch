@@ -10,7 +10,7 @@ Moodle's dashboard timeline mixes everything together: last year's modules, EC /
 - **Weights are found automatically.** In the background, the app reads each module's Moodle page and its overview / module spec / assessment schedule PDFs, and fills in weights with their source (e.g. "45% · from L0_Intro_City2026.pdf"). A small edit link corrects a misread, and a weight you type is never overwritten.
 - **Priority from weight:** ≤10% green Low, ≤50% yellow Medium, above that red High.
 - **Status lights:** green means open now, red means not open yet.
-- **Completion is detected from Moodle.** A finished quiz attempt or a submitted coursework moves the assessment to **Completed**. Exams (which aren't on Moodle) can be added by hand and ticked off.
+- **Completion is detected from Moodle.** A finished quiz attempt or a submitted coursework moves the assessment to **Completed**. Exams, vivas and coursework that Moodle doesn't have yet are found in your module files and added automatically. You set their date when it's announced, and tick off exams yourself.
 - **Offline:** if Moodle can't be reached, the last loaded assessments still show.
 
 Built with Python, Flask and Moodle's web service API. It runs locally on your own computer.
