@@ -71,7 +71,7 @@ Build mode: fast
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 3 (real dashboard with priority colours): feedback on look and behavior shapes slices 4–6
+- [x] Early usable behavior explored — after slice 3 (real dashboard with priority colours): feedback on look and behavior shapes slices 4–6
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
