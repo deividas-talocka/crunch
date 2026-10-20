@@ -15,7 +15,9 @@ IN2013_LABEL = "Quizzes There will be 5 MCQ quizzes in this module. The quizzes 
 IN2015_LABEL = ("Assessment 1: Professional Presentation (40%) Assessment 2: Summary of Professional "
                 "Development (60%) Further details below")
 IN2029_SCHEDULE = "Assessment\nCoursework\n30%\nExamination\n70%"
-IN2002_OVERVIEW = """tutorials (30% of module mark)
+IN2002_OVERVIEW = """Summative assessments:
+▪ Oral coursework (viva) throughout week 10 based on lectures and
+tutorials (30% of module mark)
 ▪ Written open “books” exam in January (70% of module mark)
 ▪ 161 passed 1st attempt (71.6%; 10% had EC)
 5. 91% passed the module, out of these 2.2% progressed by compensating this module."""
@@ -36,7 +38,7 @@ def test_reads_real_lines_and_skips_noise():
     assert summary(wf.find_weights(IN2029_SCHEDULE, "schedule.pdf")) == [
         ("coursework", None, 30, False), ("exam", None, 70, False)]
     assert summary(wf.find_weights(IN2002_OVERVIEW, "DSA0.pdf")) == [
-        ("tutorial", None, 30, False), ("exam", None, 70, False)]
+        ("viva", None, 30, False), ("exam", None, 70, False)]
     assert wf.find_weights(QUIZ_EXTRA_TIME, "Moodle page") == []
 
 
@@ -74,13 +76,16 @@ def test_manual_exam_gets_exam_weight():
     assert chosen["exam-1"]["percent"] == 70
 
 
-def test_exam_found_in_files_is_added_once_with_month():
+def test_exams_and_vivas_found_in_files_are_added_once():
     _, unmatched = wf.match(wf.find_weights(IN2002_OVERVIEW, "DSA0.pdf"), [])
-    exam = wf.exam_to_add(7, "IN2002", unmatched, [])
-    assert (exam["name"], exam["weight"], exam["month"], exam["weight_source"]) == ("IN2002 Exam", 70, 1, "DSA0.pdf")
-    assert wf.exam_to_add(7, "IN2002", unmatched, [{"course_id": 7}]) is None  # already has an exam
+    added = wf.exams_to_add(7, "IN2002", unmatched, [])
+    assert [(e["name"], e["weight"], e["month"], e["weight_source"]) for e in added] == [
+        ("IN2002 Exam", 70, 1, "DSA0.pdf"), ("IN2002 Viva", 30, None, "DSA0.pdf")]
+    assert "week 10" in added[1]["hint"]
+    # already has an exam (added by me, no found_kind) -> only the viva is added
+    assert [e["name"] for e in wf.exams_to_add(7, "IN2002", unmatched, [{"course_id": 7}])] == ["IN2002 Viva"]
     _, unmatched = wf.match(wf.find_weights(IN2029_SCHEDULE, "schedule.pdf"), [])
-    assert wf.exam_to_add(8, "IN2029", unmatched, [])["month"] is None
+    assert [(e["name"], e["month"]) for e in wf.exams_to_add(8, "IN2029", unmatched, [])] == [("IN2029 Exam", None)]
 
 
 def test_rescan_rules():

@@ -68,7 +68,7 @@ Each row in the month view shows: **module, assessment name, weight, priority, o
 
 ### Adding Exams
 Added during `4-spec`: written exams are not on Moodle, so they'd otherwise be missing — and they're often the highest-weight items.
-- Revised at final review ("make it find out all the exams and add it to the modules"): when a module's files mention an exam, the weight finder **adds it automatically** ("IN2002 Exam", 70%, source shown, tagged "found in your files"). If the file names a month ("exam in January") it shows in that month as **Date TBC**; otherwise it's listed under **Exams — date to confirm** on the dashboard. A **set date** link in the module adds the real date from the exam timetable. A module that already has an exam doesn't get another.
+- Revised at final review ("make it find out all the exams and add it to the modules"): when a module's files mention an exam, the weight finder **adds it automatically** ("IN2002 Exam", 70%, source shown, tagged "found in your files"). If the file names a month ("exam in January") it shows in that month as **Date TBC**; otherwise it's listed under **Exams — date to confirm** on the dashboard. A **set date** link in the module adds the real date from the exam timetable. A module that already has an exam doesn't get another. **Vivas** are handled the same way (e.g. "IN2002 Viva · 30%", with the file's hint "throughout week 10").
 - In the module view, an **Add exam** form takes name, date, closing time, and weight.
 - Added exams appear in the month view like any other assessment (type "Exam"), with priority from their weight.
 - Moodle knows nothing about them, so they're completed by **manual tick** only.

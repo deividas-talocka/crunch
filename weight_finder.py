@@ -30,29 +30,39 @@ COMBINED = re.compile(r"together|collectively|in total|combined|altogether|overa
 MONTHS = ["january", "february", "march", "april", "may", "june", "july",
           "august", "september", "october", "november", "december"]
 MONTH = re.compile(r"\b(" + "|".join(MONTHS) + r")\b", re.I)
-# (type, pattern) - the number after the word, if any, is group 1.
+# (type, pattern) - the number after the word, if any, is group 1. Listed most specific
+# first: "Oral coursework (viva) ... tutorials" is a viva, not coursework or a tutorial.
 TYPES = [
-    ("coursework", re.compile(r"\b(?:cw|coursework)\s*(\d+)?", re.I)),
-    ("quiz", re.compile(r"\b(?:mcqs?|quiz(?:zes)?)\b\s*(\d+)?", re.I)),
-    ("assessment", re.compile(r"\bassessment\s*(\d+)\b", re.I)),
+    ("viva", re.compile(r"\b(?:viva|oral)\b()", re.I)),
     ("exam", re.compile(r"\b(?:exam|examination)s?\b()", re.I)),
-    ("viva", re.compile(r"\bviva\b()", re.I)),
+    ("assessment", re.compile(r"\bassessment\s*(\d+)\b", re.I)),
     ("presentation", re.compile(r"\bpresentation\b()", re.I)),
+    ("quiz", re.compile(r"\b(?:mcqs?|quiz(?:zes)?)\b\s*(\d+)?", re.I)),
+    ("coursework", re.compile(r"\b(?:cw|coursework)\s*(\d+)?", re.I)),
     ("tutorial", re.compile(r"\btutorials?\b()", re.I)),
 ]
+# Assessments that happen outside Moodle, so the app adds them itself when files mention them.
+OFF_MOODLE = {"exam": "Exam", "viva": "Viva"}
 RESCAN_AFTER = 24 * 3600
-SCAN_VERSION = 2  # bump when the finder learns something new, so modules get re-read
+SCAN_VERSION = 3  # bump when the finder learns something new, so modules get re-read
 
 
 def _kind_and_number(text):
-    """The first assessment word in the text, e.g. ("coursework", 1) for "CW 1 (Analysis)"."""
-    best = None
+    """The assessment named in the text, e.g. ("coursework", 1) for "CW 1 (Analysis)".
+    A numbered one wins (earliest first), then the most specific word."""
+    numbered, plain = None, None
     for kind, pattern in TYPES:
         m = pattern.search(text)
-        if m and (best is None or m.start() < best[0]):
-            number = int(m.group(1)) if m.group(1) else None
-            best = (m.start(), kind, number)
-    return (best[1], best[2]) if best else (None, None)
+        if not m:
+            continue
+        if m.group(1):
+            if numbered is None or m.start() < numbered[0]:
+                numbered = (m.start(), kind, int(m.group(1)))
+        elif plain is None:
+            plain = (kind, None)
+    if numbered:
+        return numbered[1], numbered[2]
+    return plain or (None, None)
 
 
 def find_weights(text, source):
@@ -66,6 +76,9 @@ def find_weights(text, source):
         for m in PERCENT.finditer(line):
             percent = float(m.group(1))
             context = line[previous_end:m.start()]
+            if previous_end == 0 and line[:1].islower() and i > 0 and not NOISE.search(lines[i - 1]):
+                # A sentence wrapped from the line above: "Oral coursework (viva) ... and" / "tutorials (30%".
+                context = lines[i - 1].lstrip("•▪- ") + " " + context
             previous_end = m.end()
             kind, number = _kind_and_number(context)
             if kind is None and i > 0 and not NOISE.search(lines[i - 1]):
@@ -202,17 +215,23 @@ def courses_needing_scan(modules, notes, now=None):
     return due
 
 
-def exam_to_add(course_id, code, unmatched, existing_exams):
-    """The exam to add for a module whose files mention one, or None if it already has an exam
-    (added by me or earlier) or its files don't mention one."""
-    exams = [f for f in unmatched if f["kind"] == "exam"]
-    if not exams or any(e["course_id"] == course_id for e in existing_exams):
-        return None
-    f = max(exams, key=lambda e: e["percent"])
-    return {
-        "course_id": course_id, "name": f"{code} Exam", "close": None, "month": f.get("month"),
-        "weight": f["percent"], "weight_source": f["source"], "auto": True, "done": False,
-    }
+def exams_to_add(course_id, code, unmatched, existing_exams):
+    """Exams and vivas to add for a module whose files mention them - one of each kind,
+    skipping a kind the module already has (added by me or earlier)."""
+    added = []
+    for kind, title in OFF_MOODLE.items():
+        found = [f for f in unmatched if f["kind"] == kind]
+        if not found or any(e["course_id"] == course_id and e.get("found_kind", "exam") == kind
+                            for e in existing_exams):
+            continue
+        f = max(found, key=lambda e: e["percent"])
+        added.append({
+            "course_id": course_id, "name": f"{code} {title}", "close": None, "month": f.get("month"),
+            "weight": f["percent"], "weight_source": f["source"],
+            "hint": f["label"] if len(f["label"].split()) > 2 else None,  # skip a bare "Examination"
+            "found_kind": kind, "auto": True, "done": False,
+        })
+    return added
 
 
 def _apply(module, findings):
@@ -222,10 +241,9 @@ def _apply(module, findings):
     chosen, unmatched = match(findings, items)
     with storage.lock:
         notes = storage.load_notes()
-        exam = exam_to_add(module["id"], module["code"], unmatched, notes["exams"])
-        if exam:
+        for exam in exams_to_add(module["id"], module["code"], unmatched, notes["exams"]):
             storage.add_found_exam(notes, exam)
-            unmatched = [f for f in unmatched if f["kind"] != "exam"]
+        unmatched = [f for f in unmatched if f["kind"] not in OFF_MOODLE]
         for item_id, f in chosen.items():
             note = notes["assessments"].setdefault(item_id, {})
             typed_by_me = note.get("weight") is not None and not note.get("weight_source")

@@ -122,7 +122,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "id": exam["id"], "course_id": exam["course_id"], "name": exam["name"], "kind": "exam",
             "open": None, "close": exam["close"], "completed": False, "manual_exam": True,
             "weight": exam.get("weight"), "manual_done": exam.get("done", False),
-            "month": exam.get("month"), "auto": exam.get("auto", False),
+            "month": exam.get("month"), "auto": exam.get("auto", False), "hint": exam.get("hint"),
         })
 
     rows = []
@@ -151,6 +151,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "manual_exam": bool(item.get("manual_exam")), "optional_reason": reason,
             "status": open_status(item["open"], item["close"], now_ts),
             "date_tbc": item["kind"] == "exam" and not item["close"], "auto": item.get("auto", False),
+            "hint": item.get("hint"),
             "month_key": _month_key(item["close"]) if item["close"] else _hint_key(item.get("month"), now),
         }
         if row["date_tbc"]:

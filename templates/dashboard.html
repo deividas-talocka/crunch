@@ -47,6 +47,7 @@
       <span class="row-code">{{ r.module_code }}</span>
       <span class="tbc-name">{{ r.name }}</span>
       {% if r.priority %}<span class="badge badge-{{ r.priority }}">{{ r.weight }}% · {{ r.priority|capitalize }}</span>{% endif %}
+      {% if r.hint %}<span class="weight-source">“{{ r.hint }}”</span>{% endif %}
       <span class="weight-source">Date TBC · set it in the module</span>
     </a>
     {% endfor %}

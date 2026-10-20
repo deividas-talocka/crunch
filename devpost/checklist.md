@@ -88,6 +88,7 @@ Build mode: fast
 
 - [x] No opening date shows a red "not open yet" light (learner: "no opening date means it's not out yet") — verified: IN2015 Assessment 1 now red; tests pass.
 - [x] Exams found in module files are added automatically (learner: "find out all the exams and add it to the modules") — verified on real data: IN2002 Exam 70% in January as Date TBC, IN2029 Exam 70% under "date to confirm"; setting a date moves it into its month; no duplicates on reload; tests pass.
+- [x] IN2002 viva was missing (learner: "its missing the viva for in2002") — its sentence wraps across two PDF lines and "coursework"/"tutorials" won over "viva". Finder now joins wrapped lines, prefers specific words (viva/oral/exam), and adds vivas like exams. Verified on real data: "IN2002 Viva · 30%" added with hint "throughout week 10"; tests pass.
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
