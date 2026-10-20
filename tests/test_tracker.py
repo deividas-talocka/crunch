@@ -76,7 +76,7 @@ def test_no_closing_date_is_optional():
     assert "Practice quiz" not in names
     module = view["modules"][0]
     assert module["left"] == 2  # quiz 1, coursework 1
-    assert [(r["name"], r["optional_reason"]) for r in module["optional"]] == [("Practice quiz", "No closing date")]
+    assert [(r["name"], r["optional_reason"]) for r in module["optional"]] == [("Practice quiz", "Optional practice quiz — no closing date, so it isn't assessed")]
 
 
 def test_formative_detected_from_name_or_description():

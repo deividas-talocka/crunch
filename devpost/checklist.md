@@ -98,6 +98,7 @@ Build mode: fast
 - [x] "Open module in Moodle" button on each module page (learner request) — links to /course/view.php?id=<module>; 41 tests pass; real link checked.
 - [x] More interesting background: slow-drifting blue/purple/teal glows and a faint fading dot grid, CSS only, still when reduced motion is on (learner request: keep everything else) — checked by screenshot.
 - [x] Slogan "What matters when crunch time hits" beside the logo (learner picked it over "Your assessments, ranked by what matters") (replacing "for City St George's students"); "Completed" renamed "Completed assessments" in the nav and page (learner request) — 41 tests pass.
+- [x] Quizzes with no closing date explained as "Optional practice quiz — no closing date, so it isn't assessed" (learner request for IN2002) — 41 tests pass; real IN2002 page checked.
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

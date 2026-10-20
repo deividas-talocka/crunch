@@ -32,6 +32,8 @@ def optional_reason(item, settings):
     if item["kind"] == "exam":
         return None
     if not item["close"]:
+        if item["kind"] == "quiz":
+            return "Optional practice quiz — no closing date, so it isn't assessed"
         return "No closing date"
     name = item["name"].lower()
     for keyword in settings["optional_name_keywords"]:
