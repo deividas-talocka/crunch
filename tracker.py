@@ -129,7 +129,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             reason = None  # I said it counts, whatever the automatic check thinks
         else:
             reason = optional_reason(item, settings)
-        weight = item["weight"] if item.get("manual_exam") else note.get("weight")
+        weight = note.get("weight", item.get("weight"))  # an exam's weight can be edited later
         done = item["completed"] or item.get("manual_done") or note.get("manual_done", False)
         row = {
             "id": item["id"], "module_id": module["id"], "module_code": module["code"],

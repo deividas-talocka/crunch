@@ -28,6 +28,17 @@ def save_notes(notes):
     _write(NOTES, notes)
 
 
+def add_exam(course_id, name, close_ts, weight):
+    """Save an exam I've added myself (exams aren't on Moodle)."""
+    notes = load_notes()
+    next_number = max([int(e["id"].split("-")[1]) for e in notes["exams"]] + [0]) + 1
+    notes["exams"].append({
+        "id": f"exam-{next_number}", "course_id": course_id, "name": name,
+        "close": close_ts, "weight": weight, "done": False,
+    })
+    save_notes(notes)
+
+
 def update_assessment(assessment_id, **fields):
     """Set fields (weight, excluded, manual_done) on one assessment's notes and save."""
     notes = load_notes()

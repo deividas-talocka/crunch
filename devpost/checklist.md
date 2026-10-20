@@ -39,7 +39,7 @@ Build mode: fast
   Learner check: Open a module, enter the real weights for one module, mark an optional quiz "Doesn't count", and check the dashboard colours match what you'd expect.
   Commit: `Add weights, priority, and exclusion`
 
-- [ ] **4. EC button and Add exam**
+- [x] **4. EC button and Add exam**
   Becomes usable: The EC button shows/hides EC/extra-time versions with a label; in a module you can add an exam (name, date, time, weight) and it appears in the right month with its priority.
   Why now: Completes the "what's coming up" picture — exams are the highest-weight items — once the core view and priority exist.
   PRD ref: `prd.md > EC and Extra-Time Versions`, `prd.md > Adding Exams`

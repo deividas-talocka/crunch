@@ -1,5 +1,6 @@
 """Flask web app: pages and form handlers. Run with:  python app.py"""
 import json
+from datetime import datetime
 from pathlib import Path
 
 from flask import Flask, abort, redirect, render_template, request
@@ -53,25 +54,46 @@ def dashboard():
 
 @app.route("/module/<int:course_id>")
 def module(course_id):
+    show_ec = request.args.get("ec") == "1"
     view = load_view(show_ec=True)
     found = next((m for m in view["modules"] if m["id"] == course_id), None)
     if found is None:
         abort(404)
-    return render_template("module.html", view=view, module=found)
+    if not show_ec:
+        found["items"] = [r for r in found["items"] if not r["ec"]]
+        found["optional"] = [r for r in found["optional"] if not r["ec"]]
+    return render_template("module.html", view=view, module=found, show_ec=show_ec)
+
+
+@app.post("/module/<int:course_id>/exam")
+def add_exam(course_id):
+    name = request.form.get("name", "").strip()
+    when = request.form.get("close", "")
+    try:
+        close_ts = datetime.strptime(when, "%Y-%m-%dT%H:%M").timestamp()
+    except ValueError:
+        return back()  # name and date are required; the form enforces them too
+    weight = parse_weight(request.form.get("weight", ""))
+    if name:
+        storage.add_exam(course_id, name, close_ts, weight)
+    return back()
+
+
+def parse_weight(raw):
+    """"30", "2.5" or "30%" -> a number between 0 and 100; anything else -> None."""
+    raw = raw.strip().rstrip("%")
+    try:
+        weight = float(raw) if raw else None
+    except ValueError:
+        return None
+    if weight is None or not 0 < weight <= 100:
+        return None
+    return int(weight) if weight.is_integer() else weight
 
 
 @app.post("/assessment/<assessment_id>/weight")
 def set_weight(assessment_id):
-    raw = request.form.get("weight", "").strip().rstrip("%")
-    try:
-        weight = float(raw) if raw else None
-    except ValueError:
-        weight = None
-    if weight is not None and not 0 < weight <= 100:
-        weight = None
-    if weight is not None and weight.is_integer():
-        weight = int(weight)
-    storage.update_assessment(assessment_id, weight=weight)
+    storage.update_assessment(assessment_id, weight=parse_weight(request.form.get("weight", "")))
     return back()
 
 

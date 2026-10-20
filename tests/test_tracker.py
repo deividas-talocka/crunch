@@ -130,6 +130,16 @@ def test_open_status():
     assert tracker.open_status(ts(2026, 10, 1), ts(2026, 10, 5), now) == "closed"
 
 
+def test_added_exam_lands_in_its_month_with_priority():
+    notes = {"exams": [{"id": "exam-1", "course_id": 1, "name": "OOAD Exam",
+                        "close": ts(2027, 1, 14, 9, 30), "weight": 70, "done": False}]}
+    view = tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)
+    january = next(m for m in view["months"] if m["label"] == "January 2027")
+    exam = january["rows"][0]
+    assert (exam["name"], exam["type"], exam["priority"], exam["ec"]) == ("OOAD Exam", "Exam", "high", False)
+    assert view["modules"][0]["left"] == 3
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])

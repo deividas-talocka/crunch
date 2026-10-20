@@ -165,6 +165,12 @@ button, .button {
 }
 button.secondary, .button.secondary { background: var(--panel-2); color: var(--text); border-color: var(--border); }
 button:hover, .button:hover { filter: brightness(1.12); text-decoration: none; }
+.button.active { border-color: var(--accent); color: var(--accent); }
+.module-intro { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.module-intro p { margin: 0; }
+.exam-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; padding: 16px 18px; }
+.exam-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.exam-form input[type="text"] { width: 240px; }
 .button.disabled { opacity: .35; cursor: default; filter: none; }
 
 /* EC / extra-time rows (only shown when the EC button is on) */
