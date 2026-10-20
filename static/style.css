@@ -198,3 +198,5 @@ button:hover, .button:hover { filter: brightness(1.12); text-decoration: none; }
 .tbc-section { margin-top: 8px; }
 
 .tbc-note { margin: -6px 0 12px; font-size: 13px; }
+.all-clear { grid-column: 1 / -1; text-align: center; padding: 40px 20px; }
+.all-clear h3 { font-size: 20px; margin: 0 0 6px; }

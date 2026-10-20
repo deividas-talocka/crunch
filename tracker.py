@@ -189,6 +189,9 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
                            key=lambda r: (r["close"] is None, r["close"] or 0)),  # "Date TBC" last
         })
         key = _next_month(key)
+    this_month_rows = months[0]["rows"]
+    # A month with nothing left to do (all completed, or nothing due) isn't shown.
+    months = [m for m in months if m["rows"]]
 
     completed = sorted((r for r in visible if r["completed"]), key=lambda r: r["close"] or 0, reverse=True)
 
@@ -196,7 +199,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
     stats = {
         "today": now.strftime("%A %d %B"),
         "open_now": sum(1 for r in counted_upcoming if r["status"] == "open"),
-        "this_month": len([r for r in months[0]["rows"] if not r["ec"]]),
+        "this_month": len([r for r in this_month_rows if not r["ec"]]),
         "next": min((r for r in counted_upcoming if r["close"]), key=lambda r: r["close"], default=None),
     }
 

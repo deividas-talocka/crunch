@@ -163,6 +163,15 @@ def test_exam_without_date_goes_in_named_month_or_tbc_list():
     assert view["stats"]["next"]["name"] == "Quiz 1 on Lecture 1 and 2"
 
 
+def test_month_with_everything_done_is_removed():
+    notes = {"assessments": {"quiz-1": {"manual_done": True}}}  # October's only assessment, done
+    view = tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)
+    assert [m["label"] for m in view["months"]] == ["November 2026"]
+    assert view["stats"]["this_month"] == 0
+    notes["assessments"]["assign-3"] = {"manual_done": True}  # and November's
+    assert tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)["months"] == []
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])

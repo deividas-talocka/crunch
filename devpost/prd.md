@@ -84,7 +84,7 @@ Added during `4-spec`: written exams are not on Moodle, so they'd otherwise be m
 ## States and Boundaries
 - **First use** — no weights yet: all current assessments appear in the month view with "⚠ Needs weight."
 - **Offline / can't reach Moodle** — shows the message "Offline — assessments unable to update," with the last-loaded assessments still visible.
-- **Empty month** — shows the month with "No assessments."
+- **Empty month** — revised at final review: a month with nothing left to do (all completed, or nothing due) is not shown; if no month has anything, the dashboard says "Nothing coming up".
 - **Persists between sessions** — weights, "Doesn't count" marks, manual ticks, and completed items.
 - **Single user** — just me; no accounts or sharing.
 

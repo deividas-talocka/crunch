@@ -51,6 +51,14 @@ def test_pages_render(client, path):
     assert "Crunch" in response.get_data(as_text=True)
 
 
+def test_finished_months_disappear_and_all_done_shows_nothing_coming_up(client):
+    storage.update_assessment("quiz-1", manual_done=True)  # the only October 2099 assessment
+    html = client.get("/?m=99").get_data(as_text=True)
+    assert "October 2099" not in html and "January" in html  # the exam expected in January stays
+    storage.update_assessment("exam-1", manual_done=True)
+    assert "Nothing coming up" in client.get("/").get_data(as_text=True)
+
+
 def test_date_to_confirm_section_is_below_the_months(client):
     html = client.get("/").get_data(as_text=True)
     assert html.index("Upcoming by month") < html.index("Coming up — date to confirm")
