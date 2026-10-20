@@ -199,3 +199,5 @@ button:hover, .button:hover { filter: brightness(1.12); text-decoration: none; }
 /* EC / extra-time rows (only shown when the EC button is on) */
 .ec-row td { opacity: .7; }
 .tag-ec { font-size: 11px; padding: 1px 7px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--border); color: var(--muted); margin-left: 6px; }
+
+.tbc-section { margin-top: 8px; }

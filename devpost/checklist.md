@@ -90,6 +90,7 @@ Build mode: fast
 - [x] Exams found in module files are added automatically (learner: "find out all the exams and add it to the modules") — verified on real data: IN2002 Exam 70% in January as Date TBC, IN2029 Exam 70% under "date to confirm"; setting a date moves it into its month; no duplicates on reload; tests pass.
 - [x] IN2002 viva was missing (learner: "its missing the viva for in2002") — its sentence wraps across two PDF lines and "coursework"/"tutorials" won over "viva". Finder now joins wrapped lines, prefers specific words (viva/oral/exam), and adds vivas like exams. Verified on real data: "IN2002 Viva · 30%" added with hint "throughout week 10"; tests pass.
 - [x] App renamed to **Crunch** (learner chose it from suggestions) — top bar, page titles, README, plan docs.
+- [x] "Date to confirm" exams moved below the monthly tables and list every exam/viva without an exact date ("Expected January 2027" where the file names a month) — learner request. Found and fixed a template break during this change; added tests/test_pages.py so every page is rendered in the tests. Verified by screenshot on real data; 28 tests pass.
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

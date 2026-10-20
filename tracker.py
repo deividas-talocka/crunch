@@ -152,6 +152,8 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "status": open_status(item["open"], item["close"], now_ts),
             "date_tbc": item["kind"] == "exam" and not item["close"], "auto": item.get("auto", False),
             "hint": item.get("hint"),
+            "expected": datetime(*_hint_key(item.get("month"), now), 1).strftime("%B %Y")
+            if not item["close"] and item.get("month") else None,
             "month_key": _month_key(item["close"]) if item["close"] else _hint_key(item.get("month"), now),
         }
         if row["date_tbc"]:
@@ -166,7 +168,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
     # Upcoming: due from now on, plus exams with no date yet whose files name a month.
     upcoming = [r for r in visible if not r["completed"] and (
         (r["close"] and r["close"] >= now_ts) or (r["date_tbc"] and r["month_key"]))]
-    exams_tbc = [r for r in visible if r["date_tbc"] and not r["month_key"] and not r["completed"]]
+    exams_tbc = [r for r in visible if r["date_tbc"] and not r["completed"]]  # listed below the months
 
     for module in modules.values():
         module["left"] = sum(

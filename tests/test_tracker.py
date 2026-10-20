@@ -159,7 +159,7 @@ def test_exam_without_date_goes_in_named_month_or_tbc_list():
     view = tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)
     january = next(m for m in view["months"] if m["label"] == "January 2027")
     assert [(r["name"], r["close_str"]) for r in january["rows"]] == [("IN2013 Exam", "Date TBC")]
-    assert [r["name"] for r in view["exams_tbc"]] == ["Other Exam"]
+    assert [(r["name"], r["expected"]) for r in view["exams_tbc"]] == [("IN2013 Exam", "January 2027"), ("Other Exam", None)]
     assert view["stats"]["next"]["name"] == "Quiz 1 on Lecture 1 and 2"
 
 
