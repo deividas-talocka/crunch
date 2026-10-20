@@ -116,7 +116,7 @@ Build mode: fast
 Activity and evidence: Guided route on the spec's recorded unknown ("how the app talks to Moodle with the key"), following a dashboard reload through three real code locations. Learner reviewed the route and replied "looks great"; individual stops were not separately confirmed.
 Route and stops: app.py `def load_view` → moodle_client.py `def call` (wstoken / wsfunction / moodlewsrestformat) → moodle_client.py `def _completed` → tracker.py `build_view`.
 Edit outcome: Offered (change the helper greeting in templates/base.html); not made — no working-tree changes.
-Reflection: Offered at hand-off (optional).
+Reflection: Offered and answered (kept in the ignored learner profile).
 Activity mode: Live app and editor (learner's own); agent verified map anchors against source and rendered the map offline.
 
 ## Revisions
