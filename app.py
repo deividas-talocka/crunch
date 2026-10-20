@@ -24,8 +24,11 @@ def load_view(show_ec=False):
     offline = False
     try:
         snapshot = moodle_client.fetch_snapshot(settings["module_code_pattern"])
+        storage.save_cache(snapshot)
     except MoodleError:
-        snapshot, offline = {"courses": [], "assessments": []}, True
+        # Offline: show the last assessments we loaded, with the offline banner.
+        snapshot = storage.load_cache() or {"courses": [], "assessments": []}
+        offline = True
     view = tracker.build_view(snapshot, storage.load_notes(), settings, show_ec=show_ec)
     view["offline"] = offline
     return view

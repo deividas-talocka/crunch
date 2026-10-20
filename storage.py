@@ -4,6 +4,7 @@ from pathlib import Path
 
 DATA = Path(__file__).resolve().parent / "data"
 NOTES = DATA / "tracker.json"
+CACHE = DATA / "moodle_cache.json"
 
 
 def _read(path, default):
@@ -26,6 +27,15 @@ def load_notes():
 
 def save_notes(notes):
     _write(NOTES, notes)
+
+
+def save_cache(snapshot):
+    """Keep the last good answer from Moodle, for when it can't be reached."""
+    _write(CACHE, snapshot)
+
+
+def load_cache():
+    return _read(CACHE, None)
 
 
 def add_exam(course_id, name, close_ts, weight):

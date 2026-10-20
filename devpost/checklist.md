@@ -59,7 +59,7 @@ Build mode: fast
   Learner check: Check an assessment you've already completed shows under Completed, and tick/untick an exam to see it move.
   Commit: `Add completion detection and Completed page`
 
-- [ ] **6. Offline still shows your assessments**
+- [x] **6. Offline still shows your assessments**
   Becomes usable: If Moodle can't be reached, the dashboard still shows the last-loaded assessments under "Offline — assessments unable to update." A README explains setup and running.
   Why now: Last, because it's a fallback around the working journey; also readies the repo for the demo.
   PRD ref: `prd.md > States and Boundaries` (offline)
