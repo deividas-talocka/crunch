@@ -69,6 +69,17 @@ def test_module_page_links_to_moodle_course(client, monkeypatch):
     assert 'href="https://moodle.example/course/view.php?id=1"' in html and "Open module in Moodle" in html
 
 
+def test_setting_a_date_moves_it_into_the_months(client, monkeypatch):
+    monkeypatch.setattr(app_module, "MONTHS_SHOWN", 12)
+    before = client.get("/").get_data(as_text=True)
+    assert "IN2013 Exam" in before.split("Coming up — date to confirm")[1]
+    client.post("/exam/exam-1/date", data={"close": "2099-03-14T09:30"})
+    after = client.get("/").get_data(as_text=True)
+    assert "Coming up — date to confirm" not in after
+    march = after.split("March 2099")[1]
+    assert "IN2013 Exam" in march and "Sat 14 Mar" in march
+
+
 def test_overdue_section(client):
     storage.update_assessment("assign-3", manual_done=False)
     SNAPSHOT["assessments"][2]["completed"] = False
