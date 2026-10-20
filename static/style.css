@@ -200,3 +200,17 @@ button:hover, .button:hover { filter: brightness(1.12); text-decoration: none; }
 .tbc-note { margin: -6px 0 12px; font-size: 13px; }
 .all-clear { grid-column: 1 / -1; text-align: center; padding: 40px 20px; }
 .all-clear h3 { font-size: 20px; margin: 0 0 6px; }
+
+/* Assessment detail page */
+a.row-link { color: var(--text); }
+a.row-link:hover { color: var(--accent); text-decoration: none; }
+.detail-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; margin-top: 8px; }
+.detail-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 22px; }
+.detail-text { padding: 16px 18px; line-height: 1.65; color: var(--text); max-width: 900px; }
+.detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+
+/* Overdue */
+.overdue-title { color: #ff7b78; }
+.panel.overdue { border-color: rgba(239, 83, 80, .45); box-shadow: var(--shadow), 0 0 0 1px rgba(239, 83, 80, .12) inset; margin-top: 0; }
+.overdue-when { color: #ff7b78; }

@@ -172,6 +172,26 @@ def test_month_with_everything_done_is_removed():
     assert tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)["months"] == []
 
 
+def test_overdue_lists_past_unfinished_work_only():
+    snapshot = {**SNAPSHOT, "assessments": SNAPSHOT["assessments"] + [
+        item("quiz-9", 1, "Quiz 0 warm-up", ts(2026, 10, 18, 17)),
+        item("quiz-10", 1, "Quiz 0 warm-up (Extra time)", ts(2026, 10, 18, 17)),
+        item("assign-11", 1, "Coursework 0", ts(2026, 10, 10, 17), kind="assign"),
+    ]}
+    notes = {"assessments": {"assign-11": {"manual_done": True}}}
+    view = tracker.build_view(snapshot, notes, SETTINGS, now=NOW)
+    assert [(r["id"], r["countdown"]) for r in view["overdue"]] == [("quiz-9", "closed 2 days ago")]
+
+
+def test_countdown():
+    now = ts(2026, 10, 20, 12)
+    assert tracker.countdown(ts(2026, 10, 20, 17), now) == "closes today"
+    assert tracker.countdown(ts(2026, 10, 21, 9), now) == "closes tomorrow"
+    assert tracker.countdown(ts(2026, 10, 25, 17), now) == "closes in 5 days"
+    assert tracker.countdown(ts(2026, 10, 19, 17), now) == "closed 1 day ago"
+    assert tracker.countdown(None, now) is None
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])

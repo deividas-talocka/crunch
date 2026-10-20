@@ -24,6 +24,8 @@ Source: `scope.md > The Unique Kernel`, `scope.md > The Core Loop`.
   - **EC button** — shows/hides EC and extra-time versions.
 - **Module view** — opened by clicking a module: lists that module's Moodle assessments, where I enter weights or mark "Doesn't count."
 - **Completed** — a separate place holding all completed assessments for review.
+- **Assessment page** (added at final review) — click any assessment name: module, type, weight and its source, priority, status light, full open/close dates with a countdown ("closes in 5 days"), Moodle's description (or the hint from module files), Mark done / Doesn't count / set date, and an **Open in Moodle** button.
+- **Overdue** (added at final review) — above the month tables, in red: past its closing date, not done, not optional, not EC; each with Mark done. Hidden when nothing is overdue.
 
 ## Look and Feel
 - Influenced by City St George's, University of London: like an enhanced-looking Moodle — "easy to understand and simple."

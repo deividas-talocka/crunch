@@ -131,12 +131,14 @@ def fetch_snapshot(module_pattern=None):
     if module_pattern:
         courses = [c for c in courses if re.match(module_pattern, c["name"])]
     ids = [c["id"] for c in courses]
+    base_url = _settings()[0]
     found = []
     if ids:
         for q in quizzes(ids):
             found.append({
                 "id": f"quiz-{q['id']}", "moodle_id": q["id"], "course_id": q["course"],
                 "name": _clean(q["name"]), "kind": "quiz", "description": _plain(q.get("intro")),
+                "url": f"{base_url}/mod/quiz/view.php?id={q['coursemodule']}" if q.get("coursemodule") else None,
                 "open": q.get("timeopen") or None, "close": q.get("timeclose") or None,
                 "completed": False,
             })
@@ -144,6 +146,7 @@ def fetch_snapshot(module_pattern=None):
             found.append({
                 "id": f"assign-{a['id']}", "moodle_id": a["id"], "course_id": a["course"],
                 "name": _clean(a["name"]), "kind": "assign", "description": _plain(a.get("intro")),
+                "url": f"{base_url}/mod/assign/view.php?id={a['cmid']}" if a.get("cmid") else None,
                 "open": a.get("allowsubmissionsfromdate") or None, "close": a.get("duedate") or None,
                 "completed": False,
             })

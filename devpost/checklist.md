@@ -94,6 +94,7 @@ Build mode: fast
 - [x] Logo in the top bar; Add exam form removed (set date kept); unreleased coursework from module files added as placeholders that disappear once Moodle posts the real one (learner: "IN2029 is missing the coursework with 30%") — verified on real data: IN2029 Coursework 30% and IN2013 Coursework 2 45% shown under "Coming up — date to confirm"; 29 tests pass.
 - [x] Months with nothing left to do are removed (learner: "if i was to complete all the assessments in a specific month it would remove that month"); "Nothing coming up" when all are done — 31 tests pass, real dashboard checked.
 - [x] ⏮ First / Last ⏭ buttons beside Previous/Next (learner request) — 32 tests pass; on real data Last jumps to Dec 2026–Jan 2027.
+- [x] Assessment page (click any name: details, countdown, Moodle description, actions, Open in Moodle) and Overdue area above the months (learner requests) — 40 tests pass; detail page checked by screenshot on real data; no overdue items currently, so the area is hidden.
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

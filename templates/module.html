@@ -16,7 +16,7 @@
     <tbody>
       {% for r in module["items"] %}
       <tr class="{{ 'ec-row' if r.ec }}">
-        <td>{% if r.status != 'closed' %}<span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{% endif %}{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}{% if r.auto %} <span class="tag-ec">{{ 'not on Moodle yet' if r.type in ['Coursework', 'Assessment'] else 'found in your files' }}</span>{% endif %}</td>
+        <td>{% if r.status != 'closed' %}<span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{% endif %}<a class="row-link" href="{{ url_for('assessment', assessment_id=r.id) }}">{{ r.name }}</a>{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}{% if r.auto %} <span class="tag-ec">{{ 'not on Moodle yet' if r.type in ['Coursework', 'Assessment'] else 'found in your files' }}</span>{% endif %}</td>
         <td>{{ r.type }}</td>
         <td>{{ r.open_str }}</td>
         <td>
@@ -98,7 +98,7 @@
     <tbody>
       {% for r in module.optional %}
       <tr>
-        <td>{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
+        <td><a class="row-link" href="{{ url_for('assessment', assessment_id=r.id) }}">{{ r.name }}</a>{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
         <td>{{ r.type }}</td>
         <td>{{ r.close_str if r.close else 'No closing date' }}</td>
         <td class="muted">{{ r.optional_reason }}</td>

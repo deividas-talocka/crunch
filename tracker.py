@@ -83,6 +83,24 @@ def _hint_key(month, now):
     return (now.year, month) if month >= now.month else (now.year + 1, month)
 
 
+def countdown(close_ts, now_ts):
+    """"closes in 5 days", "closes today", "closed 2 days ago"..."""
+    if not close_ts:
+        return None
+    days = (datetime.fromtimestamp(close_ts).date() - datetime.fromtimestamp(now_ts).date()).days
+    if close_ts < now_ts:
+        return "closed today" if days == 0 else f"closed {-days} day{'s' if days != -1 else ''} ago"
+    if days == 0:
+        return "closes today"
+    if days == 1:
+        return "closes tomorrow"
+    return f"closes in {days} days"
+
+
+def _fmt_full(timestamp):
+    return datetime.fromtimestamp(timestamp).strftime("%A %d %B %Y, %H:%M") if timestamp else None
+
+
 def _next_month(key):
     year, month = key
     return (year + 1, 1) if month == 12 else (year, month + 1)
@@ -152,6 +170,9 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "status": open_status(item["open"], item["close"], now_ts),
             "date_tbc": item["kind"] == "exam" and not item["close"], "auto": item.get("auto", False),
             "hint": item.get("hint"),
+            "description": item.get("description") or "", "url": item.get("url"),
+            "countdown": countdown(item["close"], now_ts), "open_full": _fmt_full(item["open"]),
+            "close_full": _fmt_full(item["close"]),
             "expected": datetime(*_hint_key(item.get("month"), now), 1).strftime("%B %Y")
             if not item["close"] and item.get("month") else None,
             "month_key": _month_key(item["close"]) if item["close"] else _hint_key(item.get("month"), now),
@@ -169,6 +190,9 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
     upcoming = [r for r in visible if not r["completed"] and (
         (r["close"] and r["close"] >= now_ts) or (r["date_tbc"] and r["month_key"]))]
     exams_tbc = [r for r in visible if r["date_tbc"] and not r["completed"]]  # listed below the months
+    # Past its closing date and not done (EC versions excluded - those aren't mine).
+    overdue = sorted((r for r in rows if not r["ec"] and not r["completed"] and r["close"] and r["close"] < now_ts),
+                     key=lambda r: r["close"], reverse=True)
 
     for module in modules.values():
         module["left"] = sum(
@@ -210,4 +234,5 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
         "max_rows": max([len(m["rows"]) for m in months] + [1]),  # keeps every month table the same height
         "completed": completed,
         "exams_tbc": exams_tbc,
+        "overdue": overdue,
     }

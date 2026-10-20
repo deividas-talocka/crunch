@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ r.name }} — Crunch{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('module', course_id=module.id) }}">← {{ module.code }} {{ module.title[module.code|length:] }}</a></p>
+
+<div class="detail-head">
+  <div>
+    <span class="row-code">{{ module.code }} · {{ r.type }}</span>
+    <h1 class="page-title">
+      {% if not r.completed and r.status != 'closed' %}<span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{% endif %}{{ r.name }}
+    </h1>
+    <div class="detail-tags">
+      {% if r.priority %}<span class="badge badge-{{ r.priority }}">{{ r.priority|capitalize }} priority</span>
+      {% elif not r.optional_reason %}<span class="needs-weight">⚠ Needs weight</span>{% endif %}
+      {% if r.ec %}<span class="tag-ec">EC / Extra time</span>{% endif %}
+      {% if r.auto %}<span class="tag-ec">{{ 'not on Moodle yet' if r.type in ['Coursework', 'Assessment'] else 'found in your files' }}</span>{% endif %}
+      {% if r.optional_reason %}<span class="tag-ec">Optional — {{ r.optional_reason }}</span>{% endif %}
+      {% if r.completed %}<span class="done-label">✓ {{ 'Done on Moodle' if r.moodle_completed else 'Done' }}</span>{% endif %}
+    </div>
+  </div>
+  {% if r.url %}<a class="button" href="{{ r.url }}" target="_blank" rel="noopener">Open in Moodle ↗</a>{% endif %}
+</div>
+
+<div class="detail-grid">
+  <div class="stat">
+    <span class="stat-value">{{ (r.weight|string + '%') if r.weight is not none else '—' }}</span>
+    <span class="stat-label">Weight{% if r.weight is not none %} · {{ ('from ' ~ r.weight_source) if r.weight_source else 'entered by you' }}{% endif %}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-next">{{ r.open_full or '—' }}</span>
+    <span class="stat-label">Opens</span>
+  </div>
+  <div class="stat">
+    <span class="stat-next">{{ r.close_full or 'Date TBC' }}</span>
+    <span class="stat-label">Closes{% if r.countdown %} · <strong>{{ r.countdown }}</strong>{% endif %}</span>
+  </div>
+</div>
+
+{% if r.description or r.hint %}
+<h2 class="section-title spaced">{{ 'About this assessment' if r.description else 'From your module files' }}</h2>
+<div class="panel detail-text">{{ r.description or ('“' ~ r.hint ~ '”') }}</div>
+{% endif %}
+
+<h2 class="section-title spaced">Actions</h2>
+<div class="detail-actions">
+  {% if r.moodle_completed %}
+  <span class="muted">Moodle has recorded your {{ 'attempt' if r.kind == 'quiz' else 'submission' }}.</span>
+  {% elif not r.optional_reason %}
+  <form method="post" action="{{ url_for('tick', assessment_id=r.id) }}" class="inline">
+    <input type="hidden" name="done" value="{{ '0' if r.completed else '1' }}">
+    <button type="submit" class="{{ 'secondary' if r.completed else '' }}">{{ 'Undo done' if r.completed else '✓ Mark done' }}</button>
+  </form>
+  {% endif %}
+  {% if r.kind == 'exam' %}
+  <form method="post" action="{{ url_for('set_exam_date', exam_id=r.id) }}" class="inline">
+    <input type="datetime-local" name="close" required>
+    <button type="submit" class="secondary">{{ 'Set date' if r.date_tbc else 'Change date' }}</button>
+  </form>
+  {% endif %}
+  {% if r.optional_reason %}
+  <form method="post" action="{{ url_for('include', assessment_id=r.id) }}" class="inline">
+    <button type="submit" class="secondary">Counts</button>
+  </form>
+  {% else %}
+  <form method="post" action="{{ url_for('exclude', assessment_id=r.id) }}" class="inline">
+    <button type="submit" class="secondary">Doesn't count</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

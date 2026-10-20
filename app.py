@@ -104,6 +104,16 @@ def exclude(assessment_id):
     return back()
 
 
+@app.route("/assessment/<assessment_id>")
+def assessment(assessment_id):
+    view = load_view(show_ec=True)
+    for m in view["modules"]:
+        for r in m["items"] + m["optional"]:
+            if r["id"] == assessment_id:
+                return render_template("assessment.html", view=view, r=r, module=m)
+    abort(404)
+
+
 @app.post("/exam/<exam_id>/date")
 def set_exam_date(exam_id):
     try:

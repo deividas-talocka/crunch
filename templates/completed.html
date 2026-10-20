@@ -11,7 +11,7 @@
     <tbody>
       {% for r in view.completed %}
       <tr class="{{ 'ec-row' if r.ec }}">
-        <td class="name"><span class="row-code">{{ r.module_code }}</span>{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
+        <td class="name"><span class="row-code">{{ r.module_code }}</span><a class="row-link" href="{{ url_for('assessment', assessment_id=r.id) }}">{{ r.name }}</a>{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
         <td class="muted">{{ r.type }}</td>
         <td>{{ (r.weight|string + '%') if r.weight is not none else '—' }}</td>
         <td>{% if r.priority %}<span class="badge badge-{{ r.priority }}">{{ r.priority|capitalize }}</span>{% else %}—{% endif %}</td>

@@ -22,7 +22,8 @@ SNAPSHOT = {
     "courses": [{"id": 1, "name": "IN2013 Object-Oriented Analysis and Design (PRD1 A 2026/27)"}],
     "assessments": [
         {"id": "quiz-1", "moodle_id": 1, "course_id": 1, "name": "Quiz 1 on Lecture 1 and 2", "kind": "quiz",
-         "open": ts(2026, 10, 1), "close": ts(2099, 10, 25, 17), "completed": False},
+         "open": ts(2026, 10, 1), "close": ts(2099, 10, 25, 17), "completed": False,
+         "description": "Lecture 1 and 2 covers queues.", "url": "https://moodle.example/mod/quiz/view.php?id=1"},
         {"id": "quiz-2", "moodle_id": 2, "course_id": 1, "name": "Quiz 1 on Lecture 1 and 2 (Extra Time, SSP)",
          "kind": "quiz", "open": ts(2026, 10, 1), "close": ts(2099, 10, 25, 17), "completed": False},
         {"id": "assign-3", "moodle_id": 3, "course_id": 1, "name": "Coursework 1", "kind": "assign",
@@ -44,11 +45,32 @@ def client(tmp_path, monkeypatch):
     return app_module.app.test_client()
 
 
-@pytest.mark.parametrize("path", ["/", "/?ec=1", "/?m=1", "/module/1", "/module/1?ec=1", "/completed"])
+@pytest.mark.parametrize("path", ["/", "/?ec=1", "/?m=1", "/module/1", "/module/1?ec=1", "/completed",
+                                  "/assessment/quiz-1", "/assessment/quiz-2", "/assessment/assign-3",
+                                  "/assessment/exam-1"])
 def test_pages_render(client, path):
     response = client.get(path)
     assert response.status_code == 200
     assert "Crunch" in response.get_data(as_text=True)
+
+
+def test_assessment_page_shows_details_and_moodle_link(client):
+    html = client.get("/assessment/quiz-1").get_data(as_text=True)
+    assert "2.5%" in html and "from intro.pdf" in html and "Open in Moodle" in html
+    assert "Lecture 1 and 2 covers queues" in html  # Moodle's description
+    exam = client.get("/assessment/exam-1").get_data(as_text=True)
+    assert "Set date" in exam and "exam in January" in exam and "Open in Moodle" not in exam
+    assert client.get("/assessment/nope").status_code == 404
+
+
+def test_overdue_section(client):
+    storage.update_assessment("assign-3", manual_done=False)
+    SNAPSHOT["assessments"][2]["completed"] = False
+    try:
+        html = client.get("/").get_data(as_text=True)
+        assert "Overdue · 1" in html and html.index("Overdue") < html.index("Upcoming by month")
+    finally:
+        SNAPSHOT["assessments"][2]["completed"] = True
 
 
 def test_first_and_last_buttons(client, monkeypatch):
