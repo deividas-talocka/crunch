@@ -99,6 +99,16 @@ def countdown(close_ts, now_ts):
     return f"closes in {days} days"
 
 
+def days_left(close_ts, now_ts):
+    """Short countdown for tables: ("5 days left", "soon"), ("Tomorrow", "urgent")...
+    The second value is how urgent it is: "urgent" (2 days or less), "soon" (a week), or "later"."""
+    if not close_ts or close_ts < now_ts:
+        return None, None
+    days = (datetime.fromtimestamp(close_ts).date() - datetime.fromtimestamp(now_ts).date()).days
+    label = "Today" if days == 0 else "Tomorrow" if days == 1 else f"{days} days left"
+    return label, "urgent" if days <= 2 else "soon" if days <= 7 else "later"
+
+
 def _fmt_full(timestamp):
     return datetime.fromtimestamp(timestamp).strftime("%A %d %B %Y, %H:%M") if timestamp else None
 
@@ -174,6 +184,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "hint": item.get("hint"),
             "description": item.get("description") or "", "url": item.get("url"),
             "countdown": countdown(item["close"], now_ts), "open_full": _fmt_full(item["open"]),
+            "days_left": days_left(item["close"], now_ts)[0], "urgency": days_left(item["close"], now_ts)[1],
             "close_full": _fmt_full(item["close"]),
             "expected": datetime(*_hint_key(item.get("month"), now), 1).strftime("%B %Y")
             if not item["close"] and item.get("month") else None,

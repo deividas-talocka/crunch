@@ -201,6 +201,15 @@ def test_module_with_nothing_left_is_inactive_unless_overdue():
     assert tracker.build_view(SNAPSHOT, {}, SETTINGS, now=later)["modules"][0]["active"]
 
 
+def test_days_left():
+    now = ts(2026, 10, 20, 12)
+    assert tracker.days_left(ts(2026, 10, 20, 17), now) == ("Today", "urgent")
+    assert tracker.days_left(ts(2026, 10, 21, 9), now) == ("Tomorrow", "urgent")
+    assert tracker.days_left(ts(2026, 10, 25, 17), now) == ("5 days left", "soon")
+    assert tracker.days_left(ts(2026, 11, 13, 17), now) == ("24 days left", "later")
+    assert tracker.days_left(ts(2026, 10, 19), now) == (None, None)  # past: shown as overdue instead
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])

@@ -238,3 +238,9 @@ body::after {
   100% { transform: translate(3vw, -2vh) scale(1.04); }
 }
 @media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
+
+/* Days left before the deadline */
+.days-left { display: inline-block; margin-top: 3px; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+.days-urgent { color: #ff7b78; background: rgba(239, 83, 80, .14); }
+.days-soon { color: var(--medium); background: rgba(244, 197, 66, .12); }
+.days-later { color: var(--muted); background: var(--panel-2); }
