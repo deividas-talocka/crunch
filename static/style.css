@@ -16,6 +16,7 @@
 * { box-sizing: border-box; }
 
 body {
+  display: flex; flex-direction: column; min-height: 100vh;
   margin: 0;
   background: var(--bg);
   color: var(--text);
@@ -30,6 +31,8 @@ a:hover { text-decoration: underline; }
   padding: 14px 28px; background: var(--panel); border-bottom: 1px solid var(--border);
 }
 .brand { font-size: 18px; font-weight: 600; color: var(--text); }
+.brand-sub { font-size: 14px; font-weight: 400; color: var(--muted); }
+a.brand:hover { text-decoration: none; }
 .topbar nav a { margin-left: 20px; color: var(--muted); }
 .topbar nav a:hover { color: var(--text); }
 
@@ -38,7 +41,10 @@ a:hover { text-decoration: underline; }
   border-bottom: 1px solid #5a4416; font-weight: 600;
 }
 
-main { padding: 24px 28px 48px; }
+main { flex: 1; display: flex; flex-direction: column; padding: 24px 28px 28px; }
+/* The month section takes up the rest of the window, so the panels reach the bottom */
+section.grow { flex: 1; display: flex; flex-direction: column; margin-bottom: 0; }
+section.grow .months { flex: 1; }
 section { margin-bottom: 32px; }
 .section-title { font-size: 14px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin: 0 0 12px; }
 .muted { color: var(--muted); }
