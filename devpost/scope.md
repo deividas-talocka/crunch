@@ -5,7 +5,7 @@ status: approved
 
 # Crunch
 
-Your assessments, ranked by what matters. A focused view of my upcoming university assessments, pulled from Moodle, with the noise stripped out and ranked by how much they're worth.
+What matters when crunch time hits. A focused view of my upcoming university assessments, pulled from Moodle, with the noise stripped out and ranked by how much they're worth.
 
 ## The Unique Kernel
 Moodle's timeline "slams everything together." This app shows only the assessments that actually apply to me — this year's modules, no EC/extra-time duplicates, no non-contributing practice quizzes — and **prioritises them by weight**, so when I'm short on time I know a 2.5% quiz can wait while a 70% exam can't.
