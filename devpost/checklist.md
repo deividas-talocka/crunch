@@ -101,6 +101,7 @@ Build mode: fast
 - [x] Quizzes with no closing date explained as "Optional practice quiz — no closing date, so it isn't assessed" (learner request for IN2002) — 41 tests pass; real IN2002 page checked.
 - [x] Modules with nothing left to do are hidden from the dashboard (learner: "so its purely focused on whats left to do"); overdue work keeps a module visible; "Every module is done" message — 42 tests pass; all four real modules still have work, so all show.
 - [x] Days left before each deadline in the month tables and the Next deadline tile, coloured by urgency (≤2 days red, ≤7 amber) — learner request; 43 tests pass; checked by screenshot.
+- [x] Top bar redesign: glassier bar with gradient glow line, larger logo and name with divided italic slogan, pill tabs with the current page highlighted, completed-count bubble (learner request) — 43 tests pass; checked by screenshot on two pages.
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

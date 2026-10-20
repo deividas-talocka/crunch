@@ -38,18 +38,32 @@ a:hover { text-decoration: underline; }
 /* Top bar */
 .topbar {
   position: sticky; top: 0; z-index: 10;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 32px;
-  background: rgba(11, 14, 20, .75); backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-soft);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding: 12px 32px;
+  background: linear-gradient(180deg, rgba(19, 24, 33, .85), rgba(11, 14, 20, .7));
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
-.brand { font-size: 17px; font-weight: 650; color: var(--text); letter-spacing: .01em; }
-.brand { display: inline-flex; align-items: center; gap: 6px; }
-.brand-logo { width: 26px; height: 26px; margin-right: 4px; filter: drop-shadow(0 0 8px rgba(106, 168, 240, .35)); }
-.brand-sub { font-size: 14px; font-weight: 400; color: var(--muted); }
+/* A thin glowing line along the bottom, in the background's colours */
+.topbar::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(106, 168, 240, .7), rgba(150, 110, 240, .6), rgba(60, 200, 180, .5), transparent);
+}
+.brand { display: inline-flex; align-items: center; gap: 12px; color: var(--text); }
 a.brand:hover { text-decoration: none; }
-.topbar nav a { margin-left: 8px; padding: 6px 12px; border-radius: 999px; color: var(--muted); }
-.topbar nav a:hover { color: var(--text); background: var(--panel-2); text-decoration: none; }
+.brand-logo { width: 32px; height: 32px; filter: drop-shadow(0 0 10px rgba(106, 168, 240, .45)); transition: transform .2s ease; }
+a.brand:hover .brand-logo { transform: rotate(-8deg) scale(1.05); }
+.brand-name { font-size: 20px; font-weight: 750; letter-spacing: -.01em; }
+.brand-sub { font-size: 13px; color: var(--muted); padding-left: 12px; border-left: 1px solid var(--border); font-style: italic; }
+@media (max-width: 700px) { .brand-sub { display: none; } }
+.tabs { display: flex; gap: 4px; padding: 4px; background: rgba(255, 255, 255, .03); border: 1px solid var(--border); border-radius: 999px; }
+.tabs a {
+  display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 999px;
+  color: var(--muted); font-weight: 500; transition: color .15s ease, background .15s ease;
+}
+.tabs a:hover { color: var(--text); background: var(--panel-2); text-decoration: none; }
+.tabs a.current { color: var(--text); background: linear-gradient(180deg, #23304a, #1a2335); box-shadow: 0 0 0 1px rgba(106, 168, 240, .35) inset, 0 4px 14px rgba(0, 0, 0, .3); }
+.tabs .count { font-size: 11px; font-weight: 700; min-width: 20px; padding: 1px 7px; border-radius: 999px; background: rgba(76, 175, 106, .18); color: #6fd38f; text-align: center; }
 
 .banner {
   padding: 10px 32px; background: #3a2a10; color: var(--medium);

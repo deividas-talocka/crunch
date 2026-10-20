@@ -10,10 +10,18 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="{{ url_for('dashboard') }}"><img class="brand-logo" src="{{ url_for('static', filename='favicon.svg') }}" alt="">Crunch <span class="brand-sub">· What matters when crunch time hits</span></a>
-    <nav>
-      <a href="{{ url_for('dashboard') }}">Dashboard</a>
-      <a href="{{ url_for('completed') }}">Completed assessments</a>
+    <a class="brand" href="{{ url_for('dashboard') }}">
+      <img class="brand-logo" src="{{ url_for('static', filename='favicon.svg') }}" alt="">
+      <span class="brand-name">Crunch</span>
+      <span class="brand-sub">What matters when crunch time hits</span>
+    </a>
+    <nav class="tabs">
+      {% set page = request.endpoint %}
+      <a href="{{ url_for('dashboard') }}" class="{{ 'current' if page in ['dashboard', 'module', 'assessment'] }}">Dashboard</a>
+      <a href="{{ url_for('completed') }}" class="{{ 'current' if page == 'completed' }}">Completed assessments
+        {% set done = view.completed|rejectattr('ec')|list|length if view else 0 %}
+        {% if done %}<span class="count">{{ done }}</span>{% endif %}
+      </a>
     </nav>
   </header>
   {% if view and view.offline %}
