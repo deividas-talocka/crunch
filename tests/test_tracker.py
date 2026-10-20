@@ -198,7 +198,9 @@ def test_module_with_nothing_left_is_inactive_unless_overdue():
     done = {"assessments": {"quiz-1": {"manual_done": True}, "assign-3": {"manual_done": True}}}
     assert not tracker.build_view(SNAPSHOT, done, SETTINGS, now=NOW)["modules"][0]["active"]
     later = datetime(2026, 11, 20)  # both deadlines passed, nothing done -> overdue keeps it on the dashboard
-    assert tracker.build_view(SNAPSHOT, {}, SETTINGS, now=later)["modules"][0]["active"]
+    overdue_view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=later)
+    assert overdue_view["modules"][0]["active"]
+    assert overdue_view["modules"][0]["left"] == 2  # overdue work still counts as left to do
 
 
 def test_days_left():

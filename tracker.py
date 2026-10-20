@@ -208,10 +208,8 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
                      key=lambda r: r["close"], reverse=True)
 
     for module in modules.values():
-        module["left"] = sum(
-            1 for r in module["items"]
-            if not r["ec"] and not r["completed"] and (r["close"] is None or r["close"] >= now_ts)
-        )
+        # Everything still to do, overdue work included.
+        module["left"] = sum(1 for r in module["items"] if not r["ec"] and not r["completed"])
         module["items"].sort(key=lambda r: (r["close"] is None, r["close"] or 0))
         module["optional"].sort(key=lambda r: (r["close"] is None, r["close"] or 0))
 
