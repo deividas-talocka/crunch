@@ -106,6 +106,7 @@ Dashboard with module summary and side-by-side month tables; Moodle loading for 
 - (Reading weights automatically was deferred, then brought into the PoC during the build — see `Weights and Priority`.)
 
 ## Possible Later Enhancements
+- An AI recommendations helper (\"what should I focus on this week?\") — discussed at final review, learner decided not now (needs an API key, small cost, sends the assessment list to the AI provider).
 - A calendar view (raised at the build checkpoint; learner unsure of the details — "forget about it for now, I'll get back to you").
 
 ## Non-Goals
