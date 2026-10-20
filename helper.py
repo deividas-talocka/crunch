@@ -18,12 +18,21 @@ def _to_do(view):
     return [r for m in view["modules"] for r in m["items"] if not r["ec"] and not r["completed"]]
 
 
+def _label(r):
+    """"IN2013 Quiz 1", without doubling the code when the name already has it ("IN2002 Exam")."""
+    return r["name"] if r["name"].startswith(r["module_code"]) else f"{r['module_code']} {r['name']}"
+
+
 def _weight(r):
     return f"{r['weight']:g}%" if r["weight"] is not None else "weight unknown"
 
 
 def _when(r):
-    return r["days_left"] or ("date TBC" if not r["close"] else r["close_str"])
+    if r["days_left"]:
+        return r["days_left"]
+    if not r["close"]:
+        return f"expected {r['expected']}, date TBC" if r.get("expected") else "date TBC"
+    return r["close_str"]
 
 
 def focus(view, now):
@@ -32,9 +41,9 @@ def focus(view, now):
     week_end = (now + timedelta(days=7)).timestamp()
     overdue = [r for r in to_do if r["close"] and r["close"] < now_ts]
     this_week = sorted((r for r in to_do if r["close"] and now_ts <= r["close"] <= week_end), key=lambda r: r["close"])
-    items = [{"text": f"⚠ Overdue: {r['module_code']} {r['name']} ({_weight(r)}) — {r['countdown']}", "id": r["id"]}
+    items = [{"text": f"⚠ Overdue: {_label(r)} ({_weight(r)}) — {r['countdown']}", "id": r["id"]}
              for r in overdue]
-    items += [{"text": f"{r['module_code']} {r['name']} — {_when(r)} ({_weight(r)}, {(r['priority'] or 'no').capitalize()} priority)",
+    items += [{"text": f"{_label(r)} — {_when(r)} ({_weight(r)}, {(r['priority'] or 'no').capitalize()} priority)",
                "id": r["id"]} for r in sorted(this_week, key=lambda r: -(r["weight"] or 0))]
     if items:
         intro = "Here's what needs you this week, most important first:"
@@ -44,7 +53,7 @@ def focus(view, now):
     month_end = (now + timedelta(days=31)).timestamp()
     big = max((r for r in to_do if r["close"] and week_end < r["close"] <= month_end and (r["weight"] or 0) > 10),
               key=lambda r: r["weight"], default=None)
-    outro = (f"Start early on {big['module_code']} {big['name']} — {_weight(big)}, {_when(big)}."
+    outro = (f"Start early on {_label(big)} — {_weight(big)}, {_when(big)}."
              if big else "")
     return {"intro": intro, "items": items, "outro": outro}
 
@@ -55,7 +64,7 @@ def important(view, now):
         return {"intro": "Nothing left to do — everything is done. 🎉", "items": [], "outro": ""}
     return {
         "intro": "Your biggest assessments still to do, by weight:",
-        "items": [{"text": f"{r['module_code']} {r['name']} — {_weight(r)}, {_when(r)}", "id": r["id"]} for r in ranked],
+        "items": [{"text": f"{_label(r)} — {_weight(r)}, {_when(r)}", "id": r["id"]} for r in ranked],
         "outro": "High-weight work is where your time counts most.",
     }
 

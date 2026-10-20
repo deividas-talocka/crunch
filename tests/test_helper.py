@@ -52,7 +52,7 @@ def test_focus_lists_overdue_then_this_week_and_flags_big_work():
 def test_important_ranks_by_weight_including_dateless_exam():
     important = answers()["important"]
     assert [i["id"] for i in important["items"]][:2] == ["exam-1", "assign-3"]
-    assert "date TBC" in important["items"][0]["text"]
+    assert important["items"][0]["text"] == "IN2013 Exam — 70%, date TBC"  # code not repeated
 
 
 def test_progress_counts_done_and_overdue():
