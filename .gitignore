@@ -1,0 +1,15 @@
+﻿# Personal learning context (kept out of commits by default)
+/devpost/learner-profile.md
+
+# Local credentials
+.env
+.env.*
+!.env.example
+
+# Personal app data (weights, Moodle cache)
+/data/
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
