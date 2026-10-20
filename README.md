@@ -13,6 +13,7 @@ Moodle's dashboard timeline mixes everything together: last year's modules, EC /
 - **Completion is detected from Moodle.** A finished quiz attempt or a submitted coursework moves the assessment to **Completed**. Exams, vivas and coursework that Moodle doesn't have yet are found in your module files and added automatically. You set their date when it's announced, and tick off exams yourself.
 - **Assessment pages:** click any assessment for its details, a countdown, Moodle's description and an Open in Moodle link.
 - **Overdue:** anything past its deadline and not done shows in red above the months.
+- **Ask Crunch:** a free helper in a sidebar answers "What should I focus on this week?", "What's most important?" and "How am I doing?" from your own data. No AI service, so nothing leaves your computer.
 - **Offline:** if Moodle can't be reached, the last loaded assessments still show.
 
 Built with Python, Flask and Moodle's web service API. It runs locally on your own computer.
@@ -75,6 +76,7 @@ app.py              Flask routes: pages and form handlers
 moodle_client.py    talks to Moodle with the token
 tracker.py          pure logic: priority, EC and optional detection, month view
 weight_finder.py    finds weights in module pages and PDFs (runs in the background)
+helper.py           the Ask Crunch helper's answers (plain rules, no AI)
 storage.py          my notes (data/tracker.json) and the offline cache
 templates/, static/ pages and the dark theme
 scripts/            connection check and token helper

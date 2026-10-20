@@ -33,5 +33,59 @@
   <main>
     {% block content %}{% endblock %}
   </main>
+
+  {% if view and view.helper %}
+  <button class="helper-toggle" type="button" aria-controls="helper" aria-expanded="false">
+    <img src="{{ url_for('static', filename='favicon.svg') }}" alt=""><span>Ask Crunch</span>
+  </button>
+  <aside class="helper" id="helper" hidden>
+    <div class="helper-head">
+      <img src="{{ url_for('static', filename='favicon.svg') }}" alt="">
+      <div><strong>Crunch helper</strong><span class="muted">Answers from your own assessment data</span></div>
+      <button class="helper-close" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="helper-chat" aria-live="polite">
+      <div class="bubble bot">Hi! Pick a question and I'll look through your assessments.</div>
+    </div>
+    <div class="helper-questions">
+      {% for a in view.helper %}<button type="button" class="secondary" data-key="{{ a.key }}">{{ a.question }}</button>{% endfor %}
+    </div>
+    {% for a in view.helper %}
+    <template id="answer-{{ a.key }}">
+      <div class="bubble bot">
+        <p>{{ a.intro }}</p>
+        {% if a["items"] %}<ul>{% for i in a["items"] %}<li>{% if i.id %}<a href="{{ url_for('assessment', assessment_id=i.id) }}">{{ i.text }}</a>{% else %}{{ i.text }}{% endif %}</li>{% endfor %}</ul>{% endif %}
+        {% if a.outro %}<p class="muted">{{ a.outro }}</p>{% endif %}
+      </div>
+    </template>
+    {% endfor %}
+  </aside>
+  <script>
+    (function () {
+      const panel = document.getElementById("helper");
+      const toggle = document.querySelector(".helper-toggle");
+      const chat = panel.querySelector(".helper-chat");
+      function setOpen(open) { panel.hidden = !open; toggle.setAttribute("aria-expanded", open); }
+      toggle.addEventListener("click", () => setOpen(panel.hidden));
+      panel.querySelector(".helper-close").addEventListener("click", () => setOpen(false));
+      panel.querySelectorAll(".helper-questions button").forEach(button => {
+        button.addEventListener("click", () => {
+          const asked = document.createElement("div");
+          asked.className = "bubble me";
+          asked.textContent = button.textContent;
+          chat.append(asked, document.getElementById("answer-" + button.dataset.key).content.cloneNode(true));
+          chat.scrollTop = chat.scrollHeight;
+        });
+      });
+      // A link ending in #ask opens the helper; #ask-focus (etc.) also asks that question.
+      if (location.hash.startsWith("#ask")) {
+        setOpen(true);
+        const key = location.hash.slice(5);
+        const button = key && panel.querySelector(`[data-key="${key}"]`);
+        if (button) button.click();
+      }
+    })();
+  </script>
+  {% endif %}
 </body>
 </html>

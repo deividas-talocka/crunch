@@ -25,6 +25,7 @@ Source: `scope.md > The Unique Kernel`, `scope.md > The Core Loop`.
 - **Module view** — opened by clicking a module (with an **Open module in Moodle** button for its resources, added at final review): lists that module's Moodle assessments, where I enter weights or mark "Doesn't count."
 - **Completed** — a separate place holding all completed assessments for review.
 - **Assessment page** (added at final review) — click any assessment name: module, type, weight and its source, priority, status light, full open/close dates with a countdown ("closes in 5 days"), Moodle's description (or the hint from module files), Mark done / Doesn't count / set date, and an **Open in Moodle** button.
+- **Ask Crunch helper** (added at final review) — an "Ask Crunch" tab on the right edge of every page opens a sidebar with three questions: *What should I focus on this week?* (overdue first, then this week's work by weight, plus a nudge to start the next big piece early), *What's most important?* (top 5 still to do by weight), and *How am I doing?* (done vs total per module, overdue count). No AI model: plain rules over Crunch's own data — free, instant, private, works offline. Answers link to the assessment pages.
 - **Overdue** (added at final review) — above the month tables, in red: past its closing date, not done, not optional, not EC; each with Mark done. Hidden when nothing is overdue.
 
 ## Look and Feel
@@ -109,7 +110,7 @@ Dashboard with module summary and side-by-side month tables; Moodle loading for 
 - (Reading weights automatically was deferred, then brought into the PoC during the build — see `Weights and Priority`.)
 
 ## Possible Later Enhancements
-- An AI recommendations helper ("what should I focus on this week?") — discussed at final review, learner decided not now (needs an API key, small cost, sends the assessment list to the AI provider).
+- An AI recommendations helper — discussed at final review; learner chose a free rule-based helper instead (see `Ask Crunch helper`). An AI version would need an API key, cost a little, and send the assessment list to the provider.
 - A calendar view (raised at the build checkpoint; learner unsure of the details — "forget about it for now, I'll get back to you").
 
 ## Non-Goals

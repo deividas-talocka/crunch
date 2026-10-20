@@ -5,6 +5,7 @@ from pathlib import Path
 
 from flask import Flask, abort, redirect, render_template, request
 
+import helper
 import moodle_client
 import storage
 import tracker
@@ -38,6 +39,7 @@ def load_view(show_ec=False):
         all_rows = tracker.build_view(snapshot, notes, settings, show_ec=True)["modules"]
         weight_finder.start(weight_finder.courses_needing_scan(all_rows, notes))
     view["finding_weights"] = weight_finder.is_running()
+    view["helper"] = helper.answers(view)
     view["scans"] = notes.get("scans", {})
     return view
 

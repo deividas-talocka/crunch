@@ -258,3 +258,40 @@ body::after {
 .days-urgent { color: #ff7b78; background: rgba(239, 83, 80, .14); }
 .days-soon { color: var(--medium); background: rgba(244, 197, 66, .12); }
 .days-later { color: var(--muted); background: var(--panel-2); }
+
+/* Ask Crunch helper: a tab on the right edge that opens a sidebar */
+.helper-toggle {
+  position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 20;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 10px;
+  border-radius: 14px 0 0 14px; background: linear-gradient(180deg, #23304a, #1a2335); color: var(--text);
+  border: 1px solid rgba(106, 168, 240, .4); border-right: 0; box-shadow: -6px 0 24px rgba(0, 0, 0, .35);
+}
+.helper-toggle img { width: 26px; height: 26px; }
+.helper-toggle span { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 13px; letter-spacing: .04em; }
+.helper-toggle[aria-expanded="true"] { right: min(380px, 92vw); }
+.helper {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 20; width: min(380px, 92vw);
+  display: flex; flex-direction: column;
+  background: rgba(15, 19, 27, .96); backdrop-filter: blur(14px); border-left: 1px solid var(--border);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, .45); animation: slide-in .2s ease;
+}
+.helper[hidden] { display: none; }
+@keyframes slide-in { from { transform: translateX(30px); opacity: 0; } }
+.helper-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--border); }
+.helper-head img { width: 34px; height: 34px; }
+.helper-head div { display: flex; flex-direction: column; flex: 1; }
+.helper-head .muted { font-size: 12px; }
+.helper-close { background: transparent; color: var(--muted); font-size: 22px; padding: 0 6px; }
+.helper-chat { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+.bubble { max-width: 92%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; }
+.bubble p { margin: 0; }
+.bubble p + ul, .bubble ul + p { margin-top: 8px; }
+.bubble ul { margin: 6px 0 0; padding-left: 18px; }
+.bubble li + li { margin-top: 4px; }
+.bubble.bot { align-self: flex-start; background: var(--panel-2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.bubble.me { align-self: flex-end; background: linear-gradient(180deg, #2b4a78, #22406a); border-bottom-right-radius: 4px; }
+.helper-questions { display: flex; flex-direction: column; gap: 8px; padding: 14px 18px 20px; border-top: 1px solid var(--border); }
+.helper-questions button { text-align: left; white-space: normal; border-radius: 12px; }
+
+main { padding-right: 64px; }
+@media (max-width: 700px) { main { padding-right: 32px; } }
