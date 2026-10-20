@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crunch — App Map</title>
+<style>
+  :root { --bg:#0b0e14; --panel:#131821; --panel2:#1a2030; --border:#232b3a; --text:#e8ebf1; --muted:#8b95a7; --accent:#6aa8f0; --high:#ef5350; --medium:#f4c542; --low:#4caf6a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 32px 24px 64px; }
+  h1 { font-size: 30px; margin: 0 0 4px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 36px 0 12px; }
+  p { margin: 0 0 12px; }
+  .lead { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+  .card, .stop, details { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .card strong { color: var(--accent); display: block; margin-bottom: 4px; }
+  code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 13px; background: var(--panel2); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; }
+  pre { font-family: Consolas, "Cascadia Mono", monospace; font-size: 13px; background: #0f131b; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; overflow-x: auto; margin: 10px 0 0; }
+  .stop { margin-bottom: 12px; }
+  .stop h3 { margin: 0 0 6px; font-size: 16px; }
+  .num { display: inline-block; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #0b1220; text-align: center; font-weight: 700; margin-right: 8px; }
+  .diagram { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; overflow-x: auto; }
+  svg text { font-family: "Segoe UI", system-ui, sans-serif; }
+  ul { margin: 0; padding-left: 20px; }
+  li + li { margin-top: 6px; }
+  details { margin-bottom: 10px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  .muted { color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Crunch — App Map</h1>
+  <p class="lead">What matters when crunch time hits. A local web app that reads your Moodle, strips out the noise (last year's modules, EC/extra-time duplicates, optional practice work), finds each assessment's weight in your module files, and shows what's left to do — month by month, ranked by priority.</p>
+
+  <h2>The main pieces</h2>
+  <div class="grid">
+    <div class="card"><strong>app.py</strong>Flask web app: the pages (dashboard, module, assessment, completed) and the buttons (tick, weight, set date).</div>
+    <div class="card"><strong>moodle_client.py</strong>Talks to Moodle with your token from <code>.env</code>: modules, quizzes, coursework, and whether you've done them.</div>
+    <div class="card"><strong>tracker.py</strong>Pure logic: current modules, EC and optional detection, priority from weight, months, overdue, counts.</div>
+    <div class="card"><strong>weight_finder.py</strong>Runs in the background: reads module pages and PDFs, finds weights, adds exams/vivas/unreleased coursework.</div>
+    <div class="card"><strong>storage.py</strong>Your notes in <code>data/tracker.json</code> (weights, ticks, dates) and the offline copy of Moodle.</div>
+    <div class="card"><strong>helper.py</strong>The free "Ask Crunch" answers — plain rules over your data, no AI service.</div>
+  </div>
+
+  <h2>One action through the code: reloading the dashboard</h2>
+  <div class="diagram" role="img" aria-label="Diagram: browser reload goes to app.py load_view, which calls moodle_client fetch_snapshot (Moodle web services with your token) and storage (data/tracker.json), then tracker build_view, then the dashboard page you see.">
+    <svg viewBox="0 0 900 230" width="100%" style="min-width:680px">
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6aa8f0"/></marker></defs>
+      <g stroke="#232b3a" fill="#1a2030">
+        <rect x="10" y="80" width="130" height="64" rx="10"/>
+        <rect x="190" y="80" width="150" height="64" rx="10"/>
+        <rect x="390" y="10" width="190" height="64" rx="10"/>
+        <rect x="390" y="150" width="190" height="64" rx="10"/>
+        <rect x="630" y="80" width="130" height="64" rx="10"/>
+        <rect x="790" y="80" width="100" height="64" rx="10"/>
+      </g>
+      <g fill="#e8ebf1" font-size="14" text-anchor="middle" font-weight="600">
+        <text x="75" y="108">You reload</text><text x="75" y="128" fill="#8b95a7" font-weight="400" font-size="12">localhost:5000</text>
+        <text x="265" y="108">app.py</text><text x="265" y="128" fill="#8b95a7" font-weight="400" font-size="12">load_view()</text>
+        <text x="485" y="38">moodle_client.py</text><text x="485" y="58" fill="#8b95a7" font-weight="400" font-size="12">call() · _completed()</text>
+        <text x="485" y="178">storage.py</text><text x="485" y="198" fill="#8b95a7" font-weight="400" font-size="12">data/tracker.json</text>
+        <text x="695" y="108">tracker.py</text><text x="695" y="128" fill="#8b95a7" font-weight="400" font-size="12">build_view()</text>
+        <text x="840" y="108">Dashboard</text><text x="840" y="128" fill="#8b95a7" font-weight="400" font-size="12">what you see</text>
+      </g>
+      <g stroke="#6aa8f0" stroke-width="2" fill="none" marker-end="url(#a)">
+        <path d="M140 112 H186"/>
+        <path d="M340 100 C360 70, 370 50, 386 44"/>
+        <path d="M340 124 C360 150, 370 175, 386 182"/>
+        <path d="M580 44 C605 50, 615 80, 626 100"/>
+        <path d="M580 182 C605 175, 615 145, 626 124"/>
+        <path d="M760 112 H786"/>
+      </g>
+      <text x="485" y="92" fill="#8b95a7" font-size="12" text-anchor="middle">⇄ Moodle web services (your token)</text>
+    </svg>
+  </div>
+
+  <h2>The route (the three stops from the wrap-up)</h2>
+  <div class="stop">
+    <h3><span class="num">1</span><code>app.py</code> → search <code>def load_view</code></h3>
+    <p>Every page starts here. It asks Moodle for a fresh snapshot, falls back to the cached copy (and the offline bar) if Moodle can't be reached, merges your notes, and kicks off the background weight finder when a module needs reading.</p>
+  </div>
+  <div class="stop">
+    <h3><span class="num">2</span><code>moodle_client.py</code> → search <code>def call</code></h3>
+    <p>Every question to Moodle goes through this one function. The key, the question and the answer format travel together:</p>
+<pre>query = {
+    "wstoken": token,               # who I am
+    "wsfunction": function,         # what I'm asking
+    "moodlewsrestformat": "json",   # answer as JSON
+    ...
+}</pre>
+    <p class="muted" style="margin-top:10px">Only this Python code ever sees the token — the browser talks to Flask, Flask talks to Moodle.</p>
+  </div>
+  <div class="stop">
+    <h3><span class="num">3</span><code>moodle_client.py</code> → search <code>def _completed</code></h3>
+    <p>For each opened assessment, asks Moodle <code>mod_quiz_get_user_attempts</code> or <code>mod_assign_get_submission_status</code>. A "yes" marks it completed, and <code>tracker.build_view</code> moves it out of the months and into Completed assessments.</p>
+  </div>
+
+  <h2>To change this, start here</h2>
+  <ul>
+    <li><strong>What counts as EC, optional, or a module</strong> → <code>settings.json</code> (keywords and the module-code pattern — no code changes needed).</li>
+    <li><strong>Priority thresholds</strong> (≤10% Low, ≤50% Medium) → <code>tracker.py</code>, <code>def priority</code>.</li>
+    <li><strong>How weights are read from files</strong> → <code>weight_finder.py</code>, <code>def find_weights</code> and <code>def match</code>.</li>
+    <li><strong>What the helper says</strong> → <code>helper.py</code>; its panel and greeting → <code>templates/base.html</code> (search <code>Hi! Pick a question</code>).</li>
+    <li><strong>Look and feel</strong> → <code>static/style.css</code> (colours are variables at the top: <code>--accent</code>, <code>--high</code>, …).</li>
+    <li><strong>Footer links</strong> → <code>github_url</code> / <code>linkedin_url</code> in <code>settings.json</code>.</li>
+  </ul>
+
+  <h2>A practice to reuse</h2>
+  <div class="card">
+    <p><strong>Prove the risky unknown first, with real data.</strong> The spec flagged one thing everything depended on: would Moodle answer the way we assumed? Build step 1 was a small script, <code>scripts/check_moodle.py</code>, run against your real account before any dashboard existed. It exposed four surprises early — an SSL certificate problem, a single-sign-on token flow, non-module "in progress" courses, and several EC naming styles — each fixed in minutes and recorded under <em>Revisions</em> in <code>devpost/checklist.md</code>.</p>
+    <p style="margin:0">On your next project with an agent, ask: <em>"What's the one thing that, if it doesn't work, the whole idea falls over?"</em> — and have the agent build a tiny check for that first, before anything else.</p>
+  </div>
+
+  <h2>Run it again</h2>
+  <details open>
+    <summary>Start Crunch</summary>
+<pre>cd C:\Projects\assessment-tracker
+.venv\Scripts\python.exe app.py</pre>
+    <p style="margin-top:10px">Then open <code>http://localhost:5000</code>. Tests: <code>.venv\Scripts\python.exe -m pytest</code>. Moodle connection check: <code>.venv\Scripts\python.exe scripts\check_moodle.py</code>.</p>
+  </details>
+  <details>
+    <summary>About this map</summary>
+    <p>A snapshot of the code at the end of the build (commit <code>4945417</code>, "Final review complete"). Paths and function names are accurate for that commit; later changes can make it drift.</p>
+  </details>
+</main>
+</body>
+</html>
