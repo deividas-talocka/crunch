@@ -93,6 +93,7 @@ Build mode: fast
 - [x] "Date to confirm" exams moved below the monthly tables and list every exam/viva without an exact date ("Expected January 2027" where the file names a month) — learner request. Found and fixed a template break during this change; added tests/test_pages.py so every page is rendered in the tests. Verified by screenshot on real data; 28 tests pass.
 - [x] Logo in the top bar; Add exam form removed (set date kept); unreleased coursework from module files added as placeholders that disappear once Moodle posts the real one (learner: "IN2029 is missing the coursework with 30%") — verified on real data: IN2029 Coursework 30% and IN2013 Coursework 2 45% shown under "Coming up — date to confirm"; 29 tests pass.
 - [x] Months with nothing left to do are removed (learner: "if i was to complete all the assessments in a specific month it would remove that month"); "Nothing coming up" when all are done — 31 tests pass, real dashboard checked.
+- [x] ⏮ First / Last ⏭ buttons beside Previous/Next (learner request) — 32 tests pass; on real data Last jumps to Dec 2026–Jan 2027.
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

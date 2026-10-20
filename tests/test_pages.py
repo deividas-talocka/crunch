@@ -51,6 +51,15 @@ def test_pages_render(client, path):
     assert "Crunch" in response.get_data(as_text=True)
 
 
+def test_first_and_last_buttons(client, monkeypatch):
+    monkeypatch.setattr(app_module, "MONTHS_SHOWN", 1)  # sample data has two months; page one at a time
+    first = client.get("/").get_data(as_text=True)
+    assert 'disabled">⏮ First' in first and "Last ⏭</a>" in first
+    last_href = first.split("Last ⏭</a>")[0].rsplit('href="', 1)[1].split('"')[0]
+    last = client.get("/" + last_href).get_data(as_text=True)
+    assert 'disabled">Last ⏭' in last and "⏮ First</a>" in last
+
+
 def test_finished_months_disappear_and_all_done_shows_nothing_coming_up(client):
     storage.update_assessment("quiz-1", manual_done=True)  # the only October 2099 assessment
     html = client.get("/?m=99").get_data(as_text=True)

@@ -61,6 +61,8 @@ def dashboard():
         months=view["months"][start:start + MONTHS_SHOWN],
         prev_m=start - 1 if start > 0 else None,
         next_m=start + 1 if start < last_start else None,
+        first_m=0 if start > 0 else None,
+        last_m=last_start if start < last_start else None,
     )
 
 

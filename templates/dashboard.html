@@ -50,10 +50,14 @@
       {% set m_param = request.args.get('m', '0') %}
       <a class="button secondary{{ ' active' if show_ec }}" href="?m={{ m_param }}{{ '' if show_ec else '&ec=1' }}"
          title="Show or hide EC / extra-time versions">{{ 'Hide EC versions' if show_ec else 'Show EC versions' }}</a>
+      {% if first_m is not none %}<a class="button secondary" href="?m={{ first_m }}{{ ec|safe }}" title="First months">⏮ First</a>
+      {% else %}<span class="button secondary disabled">⏮ First</span>{% endif %}
       {% if prev_m is not none %}<a class="button secondary" href="?m={{ prev_m }}{{ ec|safe }}">◀ Previous</a>
       {% else %}<span class="button secondary disabled">◀ Previous</span>{% endif %}
       {% if next_m is not none %}<a class="button secondary" href="?m={{ next_m }}{{ ec|safe }}">Next ▶</a>
       {% else %}<span class="button secondary disabled">Next ▶</span>{% endif %}
+      {% if last_m is not none %}<a class="button secondary" href="?m={{ last_m }}{{ ec|safe }}" title="Last months">Last ⏭</a>
+      {% else %}<span class="button secondary disabled">Last ⏭</span>{% endif %}
     </div>
   </div>
   <div class="months">
