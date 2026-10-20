@@ -27,6 +27,9 @@ NOISE = re.compile(
     re.I,
 )
 COMBINED = re.compile(r"together|collectively|in total|combined|altogether|overall", re.I)
+MONTHS = ["january", "february", "march", "april", "may", "june", "july",
+          "august", "september", "october", "november", "december"]
+MONTH = re.compile(r"\b(" + "|".join(MONTHS) + r")\b", re.I)
 # (type, pattern) - the number after the word, if any, is group 1.
 TYPES = [
     ("coursework", re.compile(r"\b(?:cw|coursework)\s*(\d+)?", re.I)),
@@ -38,6 +41,7 @@ TYPES = [
     ("tutorial", re.compile(r"\btutorials?\b()", re.I)),
 ]
 RESCAN_AFTER = 24 * 3600
+SCAN_VERSION = 2  # bump when the finder learns something new, so modules get re-read
 
 
 def _kind_and_number(text):
@@ -73,9 +77,11 @@ def find_weights(text, source):
             label = context.strip(" (:-–|•▪").strip() or kind.title()
             if len(label) > 80:
                 label = "…" + label[-80:].split(" ", 1)[-1]  # keep whole words
+            month = MONTH.search(context)
             findings.append({
                 "kind": kind, "number": number, "percent": int(percent) if percent.is_integer() else percent,
                 "combined": bool(COMBINED.search(context)), "label": label, "source": source,
+                "month": MONTHS.index(month.group(1).lower()) + 1 if month else None,
             })
     return findings
 
@@ -190,24 +196,44 @@ def courses_needing_scan(modules, notes, now=None):
     for module in modules:
         scan = scans.get(str(module["id"]))
         unweighted = any(r["weight"] is None for r in module["items"] if not r["ec"])
-        if scan is None or (unweighted and now - scan["at"] > RESCAN_AFTER):
+        if (scan is None or scan.get("version") != SCAN_VERSION
+                or (unweighted and now - scan["at"] > RESCAN_AFTER)):
             due.append(module)
     return due
 
 
+def exam_to_add(course_id, code, unmatched, existing_exams):
+    """The exam to add for a module whose files mention one, or None if it already has an exam
+    (added by me or earlier) or its files don't mention one."""
+    exams = [f for f in unmatched if f["kind"] == "exam"]
+    if not exams or any(e["course_id"] == course_id for e in existing_exams):
+        return None
+    f = max(exams, key=lambda e: e["percent"])
+    return {
+        "course_id": course_id, "name": f"{code} Exam", "close": None, "month": f.get("month"),
+        "weight": f["percent"], "weight_source": f["source"], "auto": True, "done": False,
+    }
+
+
 def _apply(module, findings):
-    """Save matched weights (never over one I typed) and the module's findings."""
+    """Save matched weights (never over one I typed), any exam the files mention,
+    and the module's findings."""
     items = [{"id": r["id"], "name": r["name"], "kind": r["kind"], "ec": r["ec"]} for r in module["items"]]
     chosen, unmatched = match(findings, items)
     with storage.lock:
         notes = storage.load_notes()
+        exam = exam_to_add(module["id"], module["code"], unmatched, notes["exams"])
+        if exam:
+            storage.add_found_exam(notes, exam)
+            unmatched = [f for f in unmatched if f["kind"] != "exam"]
         for item_id, f in chosen.items():
             note = notes["assessments"].setdefault(item_id, {})
             typed_by_me = note.get("weight") is not None and not note.get("weight_source")
             if not typed_by_me:
                 note["weight"] = f["percent"]
                 note["weight_source"] = f["source"]
-        notes.setdefault("scans", {})[str(module["id"])] = {"at": time.time(), "unmatched": unmatched}
+        notes.setdefault("scans", {})[str(module["id"])] = {
+            "at": time.time(), "version": SCAN_VERSION, "unmatched": unmatched}
         storage.save_notes(notes)
 
 

@@ -16,10 +16,20 @@
     <tbody>
       {% for r in module["items"] %}
       <tr class="{{ 'ec-row' if r.ec }}">
-        <td>{% if r.status != 'closed' %}<span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{% endif %}{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
+        <td>{% if r.status != 'closed' %}<span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{% endif %}{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}{% if r.auto %} <span class="tag-ec">found in your files</span>{% endif %}</td>
         <td>{{ r.type }}</td>
         <td>{{ r.open_str }}</td>
-        <td>{{ r.close_str if r.close else 'No closing date' }}</td>
+        <td>
+          {% if r.kind == 'exam' %}
+          {{ r.close_str }}
+          <details class="edit"><summary>{{ 'set date' if r.date_tbc else 'change date' }}</summary>
+            <form method="post" action="{{ url_for('set_exam_date', exam_id=r.id) }}" class="inline">
+              <input type="datetime-local" name="close" required>
+              <button type="submit">Save</button>
+            </form>
+          </details>
+          {% else %}{{ r.close_str if r.close else 'No closing date' }}{% endif %}
+        </td>
         <td>{{ r.time_str }}</td>
         <td>
           {% set weight_form %}

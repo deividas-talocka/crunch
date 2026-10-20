@@ -53,14 +53,34 @@ def add_exam(course_id, name, close_ts, weight):
         source = None
         if weight is None and len({f["percent"] for f in found}) == 1:
             weight, source = found[0]["percent"], found[0]["source"]
-        next_number = max([int(e["id"].split("-")[1]) for e in notes["exams"]] + [0]) + 1
-        exam_id = f"exam-{next_number}"
+        exam_id = _next_exam_id(notes)
         notes["exams"].append({
             "id": exam_id, "course_id": course_id, "name": name,
             "close": close_ts, "weight": weight, "done": False,
         })
         if source:
             notes["assessments"][exam_id] = {"weight": weight, "weight_source": source}
+        save_notes(notes)
+
+
+def _next_exam_id(notes):
+    return f"exam-{max([int(e['id'].split('-')[1]) for e in notes['exams']] + [0]) + 1}"
+
+
+def add_found_exam(notes, exam):
+    """Add an exam the weight finder found in a module's files (caller holds the lock and saves)."""
+    exam_id = _next_exam_id(notes)
+    source = exam.pop("weight_source")
+    notes["exams"].append({"id": exam_id, **exam})
+    notes["assessments"][exam_id] = {"weight": exam["weight"], "weight_source": source}
+
+
+def set_exam_date(exam_id, close_ts):
+    with lock:
+        notes = load_notes()
+        for exam in notes["exams"]:
+            if exam["id"] == exam_id:
+                exam["close"] = close_ts
         save_notes(notes)
 
 

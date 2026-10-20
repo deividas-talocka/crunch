@@ -38,6 +38,22 @@
   </div>
 </section>
 
+{% if view.exams_tbc %}
+<section>
+  <h2 class="section-title">Exams — date to confirm</h2>
+  <div class="tbc-strip">
+    {% for r in view.exams_tbc %}
+    <a class="tbc-card" href="{{ url_for('module', course_id=r.module_id) }}">
+      <span class="row-code">{{ r.module_code }}</span>
+      <span class="tbc-name">{{ r.name }}</span>
+      {% if r.priority %}<span class="badge badge-{{ r.priority }}">{{ r.weight }}% · {{ r.priority|capitalize }}</span>{% endif %}
+      <span class="weight-source">Date TBC · set it in the module</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
 <section>
   <div class="months-header">
     <h2 class="section-title">Upcoming by month</h2>

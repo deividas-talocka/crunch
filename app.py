@@ -116,6 +116,16 @@ def exclude(assessment_id):
     return back()
 
 
+@app.post("/exam/<exam_id>/date")
+def set_exam_date(exam_id):
+    try:
+        close_ts = datetime.strptime(request.form.get("close", ""), "%Y-%m-%dT%H:%M").timestamp()
+    except ValueError:
+        return back()
+    storage.set_exam_date(exam_id, close_ts)
+    return back()
+
+
 @app.route("/completed")
 def completed():
     return render_template("completed.html", view=load_view(show_ec=True))

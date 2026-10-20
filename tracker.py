@@ -76,6 +76,13 @@ def _month_key(timestamp):
     return (d.year, d.month)
 
 
+def _hint_key(month, now):
+    """A month named in a module file ("exam in January") -> its next (year, month)."""
+    if not month:
+        return None
+    return (now.year, month) if month >= now.month else (now.year + 1, month)
+
+
 def _next_month(key):
     year, month = key
     return (year + 1, 1) if month == 12 else (year, month + 1)
@@ -115,6 +122,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "id": exam["id"], "course_id": exam["course_id"], "name": exam["name"], "kind": "exam",
             "open": None, "close": exam["close"], "completed": False, "manual_exam": True,
             "weight": exam.get("weight"), "manual_done": exam.get("done", False),
+            "month": exam.get("month"), "auto": exam.get("auto", False),
         })
 
     rows = []
@@ -142,7 +150,11 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "completed": bool(done), "moodle_completed": bool(item["completed"]),
             "manual_exam": bool(item.get("manual_exam")), "optional_reason": reason,
             "status": open_status(item["open"], item["close"], now_ts),
+            "date_tbc": item["kind"] == "exam" and not item["close"], "auto": item.get("auto", False),
+            "month_key": _month_key(item["close"]) if item["close"] else _hint_key(item.get("month"), now),
         }
+        if row["date_tbc"]:
+            row["close_str"], row["time_str"] = "Date TBC", "—"
         if reason:
             module["optional"].append(row)  # listed in the module view only, with a "Counts" button
             continue
@@ -150,7 +162,10 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
         rows.append(row)
 
     visible = [r for r in rows if show_ec or not r["ec"]]
-    upcoming = [r for r in visible if not r["completed"] and r["close"] and r["close"] >= now_ts]
+    # Upcoming: due from now on, plus exams with no date yet whose files name a month.
+    upcoming = [r for r in visible if not r["completed"] and (
+        (r["close"] and r["close"] >= now_ts) or (r["date_tbc"] and r["month_key"]))]
+    exams_tbc = [r for r in visible if r["date_tbc"] and not r["month_key"] and not r["completed"]]
 
     for module in modules.values():
         module["left"] = sum(
@@ -162,12 +177,13 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
 
     # Month columns: the current month through the last month with something due.
     start = (now.year, now.month)
-    end = max([_month_key(r["close"]) for r in upcoming] + [start])
+    end = max([r["month_key"] for r in upcoming] + [start])
     months, key = [], start
     while key <= end:
         months.append({
             "label": datetime(key[0], key[1], 1).strftime("%B %Y"),
-            "rows": sorted((r for r in upcoming if _month_key(r["close"]) == key), key=lambda r: r["close"]),
+            "rows": sorted((r for r in upcoming if r["month_key"] == key),
+                           key=lambda r: (r["close"] is None, r["close"] or 0)),  # "Date TBC" last
         })
         key = _next_month(key)
 
@@ -178,7 +194,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
         "today": now.strftime("%A %d %B"),
         "open_now": sum(1 for r in counted_upcoming if r["status"] == "open"),
         "this_month": len([r for r in months[0]["rows"] if not r["ec"]]),
-        "next": min(counted_upcoming, key=lambda r: r["close"], default=None),
+        "next": min((r for r in counted_upcoming if r["close"]), key=lambda r: r["close"], default=None),
     }
 
     return {
@@ -187,4 +203,5 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
         "months": months,
         "max_rows": max([len(m["rows"]) for m in months] + [1]),  # keeps every month table the same height
         "completed": completed,
+        "exams_tbc": exams_tbc,
     }

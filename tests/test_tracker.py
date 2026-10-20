@@ -151,6 +151,18 @@ def test_completed_moves_out_of_months_and_counts():
     assert view["modules"][0]["left"] == 0
 
 
+def test_exam_without_date_goes_in_named_month_or_tbc_list():
+    notes = {"exams": [
+        {"id": "exam-1", "course_id": 1, "name": "IN2013 Exam", "close": None, "month": 1, "weight": 70, "auto": True},
+        {"id": "exam-2", "course_id": 1, "name": "Other Exam", "close": None, "month": None, "weight": 50},
+    ]}
+    view = tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)
+    january = next(m for m in view["months"] if m["label"] == "January 2027")
+    assert [(r["name"], r["close_str"]) for r in january["rows"]] == [("IN2013 Exam", "Date TBC")]
+    assert [r["name"] for r in view["exams_tbc"]] == ["Other Exam"]
+    assert view["stats"]["next"]["name"] == "Quiz 1 on Lecture 1 and 2"
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])

@@ -74,11 +74,21 @@ def test_manual_exam_gets_exam_weight():
     assert chosen["exam-1"]["percent"] == 70
 
 
+def test_exam_found_in_files_is_added_once_with_month():
+    _, unmatched = wf.match(wf.find_weights(IN2002_OVERVIEW, "DSA0.pdf"), [])
+    exam = wf.exam_to_add(7, "IN2002", unmatched, [])
+    assert (exam["name"], exam["weight"], exam["month"], exam["weight_source"]) == ("IN2002 Exam", 70, 1, "DSA0.pdf")
+    assert wf.exam_to_add(7, "IN2002", unmatched, [{"course_id": 7}]) is None  # already has an exam
+    _, unmatched = wf.match(wf.find_weights(IN2029_SCHEDULE, "schedule.pdf"), [])
+    assert wf.exam_to_add(8, "IN2029", unmatched, [])["month"] is None
+
+
 def test_rescan_rules():
     now = 1_000_000
     weighted = {"id": 1, "items": [{"weight": 45, "ec": False}]}
     unweighted = {"id": 2, "items": [{"weight": None, "ec": False}]}
-    notes = {"scans": {"1": {"at": now - 10}, "2": {"at": now - 10}}}
+    v = wf.SCAN_VERSION
+    notes = {"scans": {"1": {"at": now - 10, "version": v}, "2": {"at": now - 10, "version": v}}}
     assert wf.courses_needing_scan([weighted, unweighted], notes, now) == []
     later = now + wf.RESCAN_AFTER + 1
     assert wf.courses_needing_scan([weighted, unweighted], notes, later) == [unweighted]
