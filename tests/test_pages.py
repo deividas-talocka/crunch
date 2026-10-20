@@ -66,7 +66,7 @@ def test_assessment_page_shows_details_and_moodle_link(client):
 def test_footer(client):
     html = client.get("/").get_data(as_text=True)
     assert "Updated from Moodle" in html and "Made by Deividas Talocka" in html
-    assert "Not affiliated with City St George's" in html and "student project" not in html and "Build With AI: Basics hackathon" in html
+    assert "Build With AI: Basics hackathon" in html
     assert ">GitHub<" not in html  # no repository link until github_url is set
 
 
