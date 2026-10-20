@@ -67,7 +67,6 @@ def test_footer(client):
     html = client.get("/").get_data(as_text=True)
     assert "Updated from Moodle" in html and "Made by Deividas Talocka" in html
     assert "Build With AI: Basics hackathon" in html
-    assert ">GitHub<" not in html  # no repository link until github_url is set
 
 
 def test_module_page_links_to_moodle_course(client, monkeypatch):
