@@ -173,7 +173,16 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
 
     completed = sorted((r for r in visible if r["completed"]), key=lambda r: r["close"] or 0, reverse=True)
 
+    counted_upcoming = [r for r in upcoming if not r["ec"]]
+    stats = {
+        "today": now.strftime("%A %d %B"),
+        "open_now": sum(1 for r in counted_upcoming if r["status"] == "open"),
+        "this_month": len([r for r in months[0]["rows"] if not r["ec"]]),
+        "next": min(counted_upcoming, key=lambda r: r["close"], default=None),
+    }
+
     return {
+        "stats": stats,
         "modules": sorted(modules.values(), key=lambda m: m["code"]),
         "months": months,
         "max_rows": max([len(m["rows"]) for m in months] + [1]),  # keeps every month table the same height

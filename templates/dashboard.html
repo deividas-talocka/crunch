@@ -1,12 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
+<section class="hero">
+  <div>
+    <p class="hero-date">{{ view.stats.today }}</p>
+    <h1 class="hero-title">Your assessments</h1>
+  </div>
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-value">{{ view.stats.open_now }}</span>
+      <span class="stat-label"><span class="light light-open"></span>Open now</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">{{ view.stats.this_month }}</span>
+      <span class="stat-label">Due this month</span>
+    </div>
+    {% if view.stats.next %}
+    <div class="stat stat-wide">
+      <span class="stat-next">{{ view.stats.next.module_code }} · {{ view.stats.next.name }}</span>
+      <span class="stat-label">Next deadline · {{ view.stats.next.close_str }} {{ view.stats.next.time_str }}</span>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
 <section>
   <h2 class="section-title">Modules</h2>
   <div class="modules">
     {% for m in view.modules %}
     <a class="module-card" href="{{ url_for('module', course_id=m.id) }}">
       <div class="module-code">{{ m.code }}</div>
-      <div class="module-title">{{ m.title }}</div>
+      <div class="module-title">{{ m.title[m.code|length:] }}</div>
       <div class="module-left"><strong>{{ m.left }}</strong> left</div>
     </a>
     {% else %}
@@ -19,8 +42,8 @@
   <div class="months-header">
     <h2 class="section-title">Upcoming by month</h2>
     <div class="legend muted">
-      <span><span class="light light-open"></span> Open now</span>
-      <span><span class="light light-not_open"></span> Not open yet</span>
+      <span><span class="light light-open"></span>Open now</span>
+      <span><span class="light light-not_open"></span>Not open yet</span>
     </div>
     <div class="month-nav">
       {% set ec = '&ec=1' if show_ec else '' %}
@@ -33,30 +56,34 @@
   <div class="months">
     {% for month in months %}
     <div class="month">
-      <h3>{{ month.label }}</h3>
+      <div class="month-head">
+        <h3>{{ month.label }}</h3>
+        <span class="chip">{{ month.rows|length }} {{ 'assessment' if month.rows|length == 1 else 'assessments' }}</span>
+      </div>
       <table>
         <thead>
-          <tr><th>Module</th><th>Assessment</th><th>Type</th><th>Weight</th><th>Priority</th><th>Opens</th><th>Closes</th><th>Time</th></tr>
+          <tr><th>Assessment</th><th>Type</th><th>Weight</th><th>Priority</th><th>Opens</th><th>Closes</th></tr>
         </thead>
         <tbody>
           {% for r in month.rows %}
           <tr class="{{ 'ec-row' if r.ec }}">
-            <td class="code">{{ r.module_code }}</td>
-            <td><span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
-            <td>{{ r.type }}</td>
+            <td class="name">
+              <span class="row-code">{{ r.module_code }}</span>
+              <span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}
+            </td>
+            <td class="muted">{{ r.type }}</td>
             <td>{{ (r.weight|string + '%') if r.weight is not none else '—' }}</td>
             <td>
               {% if r.priority %}<span class="badge badge-{{ r.priority }}">{{ r.priority|capitalize }}</span>
               {% else %}<span class="needs-weight">⚠ Needs weight</span>{% endif %}
             </td>
-            <td>{{ r.open_str }}</td>
-            <td>{{ r.close_str }}</td>
-            <td>{{ r.time_str }}</td>
+            <td class="muted">{{ r.open_str }}</td>
+            <td><span class="close-date">{{ r.close_str }}</span><span class="close-time">{{ r.time_str }}</span></td>
           </tr>
           {% endfor %}
           {% for i in range(view.max_rows - month.rows|length) %}
           <tr class="filler">
-            <td colspan="8">{% if loop.first and not month.rows %}<span class="muted">No assessments</span>{% else %}&nbsp;{% endif %}</td>
+            <td colspan="6">{% if loop.first and not month.rows %}<span class="muted">No assessments</span>{% else %}&nbsp;{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>

@@ -104,6 +104,7 @@ Dashboard with module summary and side-by-side month tables; Moodle loading for 
 
 ## Possible Later Enhancements
 - Auto-read weights from slides (see above).
+- A calendar view (raised at the build checkpoint; learner unsure of the details — "forget about it for now, I'll get back to you").
 
 ## Non-Goals
 - Showing Moodle's full unfiltered list — that's the problem being replaced.
