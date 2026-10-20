@@ -1,0 +1,13 @@
+{
+  "module_code_pattern": "^[A-Z]{2}\\d{4}",
+  "ec_keywords": ["extra time", "ssp", "extenuating circumstances", "extension", "extensions"],
+  "type_keywords": {
+    "viva": "Viva",
+    "exam": "Exam",
+    "presentation": "Presentation",
+    "coursework": "Coursework",
+    "cw1": "Coursework",
+    "cw2": "Coursework",
+    "quiz": "Quiz"
+  }
+}

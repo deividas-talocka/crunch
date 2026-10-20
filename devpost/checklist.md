@@ -19,7 +19,7 @@ Build mode: fast
   Learner check: Run `python scripts/check_moodle.py` and say whether the modules listed are exactly this year's and the assessments look like what you see on Moodle.
   Commit: `Add Moodle client and connection check`
 
-- [ ] **2. The dashboard shows this year's real assessments, month by month**
+- [x] **2. The dashboard shows this year's real assessments, month by month**
   Becomes usable: Open `localhost:5000` and see a dark dashboard: module summary with "left" counts, and side-by-side month columns (current month onward) with a table row per assessment — module, name, type, open/close dates, close time — every row showing "⚠ Needs weight". EC/extra-time versions are already hidden.
   Why now: First half of the kernel — the noise filtering (current modules only, EC hidden) — on the real screen, so you can react to the look early.
   PRD ref: `prd.md > The Core Journey` (steps 1–3), `prd.md > Screens and Layout`, `prd.md > Assessment Rows`, `prd.md > EC and Extra-Time Versions`, `prd.md > Look and Feel`, `prd.md > States and Boundaries` (first use, empty month)

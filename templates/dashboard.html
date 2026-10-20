@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<section>
+  <h2 class="section-title">Modules</h2>
+  <div class="modules">
+    {% for m in view.modules %}
+    <div class="module-card">
+      <div class="module-code">{{ m.code }}</div>
+      <div class="module-title">{{ m.title }}</div>
+      <div class="module-left"><strong>{{ m.left }}</strong> left</div>
+    </div>
+    {% else %}
+    <p class="muted">No current modules found.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title">Upcoming by month</h2>
+  <div class="months">
+    {% for month in view.months %}
+    <div class="month">
+      <h3>{{ month.label }}</h3>
+      {% if month.rows %}
+      <table>
+        <thead>
+          <tr><th>Module</th><th>Assessment</th><th>Type</th><th>Weight</th><th>Priority</th><th>Opens</th><th>Closes</th><th>Time</th></tr>
+        </thead>
+        <tbody>
+          {% for r in month.rows %}
+          <tr class="{{ 'ec-row' if r.ec }}">
+            <td class="code">{{ r.module_code }}</td>
+            <td>{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
+            <td>{{ r.type }}</td>
+            <td>{{ (r.weight|string + '%') if r.weight is not none else '—' }}</td>
+            <td>
+              {% if r.priority %}<span class="badge badge-{{ r.priority }}">{{ r.priority|capitalize }}</span>
+              {% else %}<span class="needs-weight">⚠ Needs weight</span>{% endif %}
+            </td>
+            <td>{{ r.open_str }}</td>
+            <td>{{ r.close_str }}</td>
+            <td>{{ r.time_str }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="muted empty">No assessments</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

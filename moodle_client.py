@@ -3,6 +3,7 @@
 Knows nothing about weights or priority - it only asks Moodle questions
 and returns plain Python data.
 """
+import html
 import os
 
 import requests
@@ -84,3 +85,34 @@ def assignments(course_ids):
         for assignment in course["assignments"]:
             result.append({**assignment, "course": course["id"]})
     return result
+
+
+def _clean(text):
+    """Moodle sends names HTML-escaped ("&amp;") and sometimes with double spaces."""
+    return " ".join(html.unescape(text).split())
+
+
+def fetch_snapshot():
+    """Everything the app needs from Moodle, as plain data:
+    {"courses": [{id, name}], "assessments": [{id, course_id, name, kind, open, close, completed}]}
+    Times are Unix timestamps, or None when Moodle has no date set.
+    """
+    courses = [{"id": c["id"], "name": _clean(c["fullname"])} for c in current_courses()]
+    ids = [c["id"] for c in courses]
+    found = []
+    if ids:
+        for q in quizzes(ids):
+            found.append({
+                "id": f"quiz-{q['id']}", "moodle_id": q["id"], "course_id": q["course"],
+                "name": _clean(q["name"]), "kind": "quiz",
+                "open": q.get("timeopen") or None, "close": q.get("timeclose") or None,
+                "completed": False,
+            })
+        for a in assignments(ids):
+            found.append({
+                "id": f"assign-{a['id']}", "moodle_id": a["id"], "course_id": a["course"],
+                "name": _clean(a["name"]), "kind": "assign",
+                "open": a.get("allowsubmissionsfromdate") or None, "close": a.get("duedate") or None,
+                "completed": False,
+            })
+    return {"courses": courses, "assessments": found}

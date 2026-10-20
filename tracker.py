@@ -1,0 +1,141 @@
+"""Pure logic: turns a Moodle snapshot plus my notes into what the pages show.
+
+No web calls and no file access here, so everything can be tested directly.
+"""
+import re
+from datetime import datetime
+
+
+def priority(weight):
+    """<=10% low, over 10% up to 50% medium, over 50% high; no weight -> None."""
+    if weight is None:
+        return None
+    if weight <= 10:
+        return "low"
+    if weight <= 50:
+        return "medium"
+    return "high"
+
+
+def is_ec(name, keywords):
+    """True if the name mentions any EC / extra-time keyword as whole words."""
+    lowered = name.lower()
+    return any(re.search(rf"\b{re.escape(k.lower())}\b", lowered) for k in keywords)
+
+
+def assessment_type(name, kind, type_keywords):
+    lowered = name.lower()
+    for keyword, label in type_keywords.items():
+        if re.search(rf"\b{re.escape(keyword.lower())}\b", lowered):
+            return label
+    return {"quiz": "Quiz", "assign": "Coursework", "exam": "Exam"}.get(kind, "Assessment")
+
+
+def module_code(course_name, pattern):
+    match = re.match(pattern, course_name)
+    return match.group(0) if match else None
+
+
+def module_title(course_name):
+    """"IN2002 Data Structures and Algorithms (PRD1 A 2026/27)" -> without the bracketed term."""
+    return re.sub(r"\s*\([^)]*\)\s*$", "", course_name)
+
+
+def _month_key(timestamp):
+    d = datetime.fromtimestamp(timestamp)
+    return (d.year, d.month)
+
+
+def _next_month(key):
+    year, month = key
+    return (year + 1, 1) if month == 12 else (year, month + 1)
+
+
+def _fmt_date(timestamp):
+    return datetime.fromtimestamp(timestamp).strftime("%a %d %b") if timestamp else "—"
+
+
+def _fmt_time(timestamp):
+    return datetime.fromtimestamp(timestamp).strftime("%H:%M") if timestamp else "—"
+
+
+def build_view(snapshot, notes, settings, show_ec=False, now=None):
+    """Everything the dashboard, module and completed pages need.
+
+    snapshot: from moodle_client.fetch_snapshot()
+    notes:    my tracker.json contents ({"assessments": {...}, "exams": [...]})
+    """
+    now = now or datetime.now()
+    now_ts = now.timestamp()
+    pattern = settings["module_code_pattern"]
+    my_notes = notes.get("assessments", {})
+
+    modules = {}
+    for course in snapshot["courses"]:
+        code = module_code(course["name"], pattern)
+        if code:
+            modules[course["id"]] = {
+                "id": course["id"], "code": code, "title": module_title(course["name"]),
+                "left": 0, "items": [],
+            }
+
+    items = list(snapshot["assessments"])
+    for exam in notes.get("exams", []):
+        items.append({
+            "id": exam["id"], "course_id": exam["course_id"], "name": exam["name"], "kind": "exam",
+            "open": None, "close": exam["close"], "completed": False, "manual_exam": True,
+            "weight": exam.get("weight"), "manual_done": exam.get("done", False),
+        })
+
+    rows = []
+    for item in items:
+        module = modules.get(item["course_id"])
+        if module is None:
+            continue  # not a current module (e.g. Library Induction)
+        note = my_notes.get(item["id"], {})
+        if note.get("excluded"):
+            continue  # marked "Doesn't count"
+        weight = item["weight"] if item.get("manual_exam") else note.get("weight")
+        done = item["completed"] or item.get("manual_done") or note.get("manual_done", False)
+        row = {
+            "id": item["id"], "module_id": module["id"], "module_code": module["code"],
+            "name": item["name"], "kind": item["kind"],
+            "type": assessment_type(item["name"], item["kind"], settings["type_keywords"]),
+            "weight": weight, "priority": priority(weight),
+            "ec": item["kind"] != "exam" and is_ec(item["name"], settings["ec_keywords"]),
+            "close": item["close"], "open_str": _fmt_date(item["open"]),
+            "close_str": _fmt_date(item["close"]), "time_str": _fmt_time(item["close"]),
+            "completed": bool(done), "moodle_completed": bool(item["completed"]),
+            "manual_exam": bool(item.get("manual_exam")),
+        }
+        module["items"].append(row)
+        rows.append(row)
+
+    visible = [r for r in rows if show_ec or not r["ec"]]
+    upcoming = [r for r in visible if not r["completed"] and r["close"] and r["close"] >= now_ts]
+
+    for module in modules.values():
+        module["left"] = sum(
+            1 for r in module["items"]
+            if not r["ec"] and not r["completed"] and (r["close"] is None or r["close"] >= now_ts)
+        )
+        module["items"].sort(key=lambda r: (r["close"] is None, r["close"] or 0))
+
+    # Month columns: the current month through the last month with something due.
+    start = (now.year, now.month)
+    end = max([_month_key(r["close"]) for r in upcoming] + [start])
+    months, key = [], start
+    while key <= end:
+        months.append({
+            "label": datetime(key[0], key[1], 1).strftime("%B %Y"),
+            "rows": sorted((r for r in upcoming if _month_key(r["close"]) == key), key=lambda r: r["close"]),
+        })
+        key = _next_month(key)
+
+    completed = sorted((r for r in visible if r["completed"]), key=lambda r: r["close"] or 0, reverse=True)
+
+    return {
+        "modules": sorted(modules.values(), key=lambda m: m["code"]),
+        "months": months,
+        "completed": completed,
+    }
