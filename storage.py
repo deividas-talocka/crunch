@@ -1,6 +1,11 @@
 """Reads and writes my notes (data/tracker.json). The data folder is gitignored."""
 import json
+import threading
 from pathlib import Path
+
+# The background weight finder and the web pages both save notes; this stops them
+# overwriting each other's changes.
+lock = threading.RLock()
 
 DATA = Path(__file__).resolve().parent / "data"
 NOTES = DATA / "tracker.json"
@@ -39,18 +44,29 @@ def load_cache():
 
 
 def add_exam(course_id, name, close_ts, weight):
-    """Save an exam I've added myself (exams aren't on Moodle)."""
-    notes = load_notes()
-    next_number = max([int(e["id"].split("-")[1]) for e in notes["exams"]] + [0]) + 1
-    notes["exams"].append({
-        "id": f"exam-{next_number}", "course_id": course_id, "name": name,
-        "close": close_ts, "weight": weight, "done": False,
-    })
-    save_notes(notes)
+    """Save an exam I've added myself (exams aren't on Moodle). With no weight given,
+    use an exam weight the weight finder found in this module's files, if any."""
+    with lock:
+        notes = load_notes()
+        found = [f for f in notes.get("scans", {}).get(str(course_id), {}).get("unmatched", [])
+                 if f["kind"] == "exam"]
+        source = None
+        if weight is None and len({f["percent"] for f in found}) == 1:
+            weight, source = found[0]["percent"], found[0]["source"]
+        next_number = max([int(e["id"].split("-")[1]) for e in notes["exams"]] + [0]) + 1
+        exam_id = f"exam-{next_number}"
+        notes["exams"].append({
+            "id": exam_id, "course_id": course_id, "name": name,
+            "close": close_ts, "weight": weight, "done": False,
+        })
+        if source:
+            notes["assessments"][exam_id] = {"weight": weight, "weight_source": source}
+        save_notes(notes)
 
 
 def update_assessment(assessment_id, **fields):
     """Set fields (weight, excluded, manual_done) on one assessment's notes and save."""
-    notes = load_notes()
-    notes["assessments"].setdefault(assessment_id, {}).update(fields)
-    save_notes(notes)
+    with lock:
+        notes = load_notes()
+        notes["assessments"].setdefault(assessment_id, {}).update(fields)
+        save_notes(notes)

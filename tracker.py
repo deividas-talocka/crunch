@@ -135,7 +135,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "id": item["id"], "module_id": module["id"], "module_code": module["code"],
             "name": item["name"], "kind": item["kind"],
             "type": assessment_type(item["name"], item["kind"], settings["type_keywords"]),
-            "weight": weight, "priority": priority(weight),
+            "weight": weight, "priority": priority(weight), "weight_source": note.get("weight_source"),
             "ec": item["kind"] != "exam" and is_ec(item["name"], settings["ec_keywords"]),
             "close": item["close"], "open_str": _fmt_date(item["open"]),
             "close_str": _fmt_date(item["close"]), "time_str": _fmt_time(item["close"]),

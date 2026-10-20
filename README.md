@@ -7,7 +7,8 @@ Moodle's dashboard timeline mixes everything together: last year's modules, EC /
 - **Current modules only.** Courses whose name starts with a module code (e.g. `IN2013 …`).
 - **EC / extra-time versions are hidden**, with a button to show them, labelled.
 - **Optional work is left out automatically.** That means no closing date, "formative" / "practice" in the name, or a description like "no mark". Each module page lists what was left out and why, with a **Counts** button.
-- **Priority from weight:** ≤10% green Low, ≤50% yellow Medium, above that red High. You enter weights once per assessment.
+- **Weights are found automatically.** In the background, the app reads each module's Moodle page and its overview / module spec / assessment schedule PDFs, and fills in weights with their source (e.g. "45% · from L0_Intro_City2026.pdf"). A small edit link corrects a misread, and a weight you type is never overwritten.
+- **Priority from weight:** ≤10% green Low, ≤50% yellow Medium, above that red High.
 - **Status lights:** green means open now, red means not open yet.
 - **Completion is detected from Moodle.** A finished quiz attempt or a submitted coursework moves the assessment to **Completed**. Exams (which aren't on Moodle) can be added by hand and ticked off.
 - **Offline:** if Moodle can't be reached, the last loaded assessments still show.
@@ -71,6 +72,7 @@ python -m pytest
 app.py              Flask routes: pages and form handlers
 moodle_client.py    talks to Moodle with the token
 tracker.py          pure logic: priority, EC and optional detection, month view
+weight_finder.py    finds weights in module pages and PDFs (runs in the background)
 storage.py          my notes (data/tracker.json) and the offline cache
 templates/, static/ pages and the dark theme
 scripts/            connection check and token helper

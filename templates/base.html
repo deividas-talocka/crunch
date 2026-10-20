@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Assessment Tracker{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% if view and view.finding_weights %}<meta http-equiv="refresh" content="5">{% endif %}
 </head>
 <body>
   <header class="topbar">
@@ -16,6 +17,9 @@
   </header>
   {% if view and view.offline %}
   <div class="banner">Offline — assessments unable to update</div>
+  {% endif %}
+  {% if view and view.finding_weights %}
+  <div class="banner banner-info"><span class="spinner"></span>Finding weights from your module files… this page will refresh by itself.</div>
   {% endif %}
   <main>
     {% block content %}{% endblock %}

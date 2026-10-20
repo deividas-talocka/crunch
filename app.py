@@ -8,6 +8,7 @@ from flask import Flask, abort, redirect, render_template, request
 import moodle_client
 import storage
 import tracker
+import weight_finder
 from moodle_client import MoodleError
 
 ROOT = Path(__file__).resolve().parent
@@ -29,8 +30,15 @@ def load_view(show_ec=False):
         # Offline: show the last assessments we loaded, with the offline banner.
         snapshot = storage.load_cache() or {"courses": [], "assessments": []}
         offline = True
-    view = tracker.build_view(snapshot, storage.load_notes(), settings, show_ec=show_ec)
+    notes = storage.load_notes()
+    view = tracker.build_view(snapshot, notes, settings, show_ec=show_ec)
     view["offline"] = offline
+    if not offline:
+        # Weights are found by themselves, in the background, when a module needs it.
+        all_rows = tracker.build_view(snapshot, notes, settings, show_ec=True)["modules"]
+        weight_finder.start(weight_finder.courses_needing_scan(all_rows, notes))
+    view["finding_weights"] = weight_finder.is_running()
+    view["scans"] = notes.get("scans", {})
     return view
 
 
@@ -97,7 +105,8 @@ def parse_weight(raw):
 
 @app.post("/assessment/<assessment_id>/weight")
 def set_weight(assessment_id):
-    storage.update_assessment(assessment_id, weight=parse_weight(request.form.get("weight", "")))
+    # A weight I type replaces a found one and is never overwritten by the finder.
+    storage.update_assessment(assessment_id, weight=parse_weight(request.form.get("weight", "")), weight_source=None)
     return back()
 
 

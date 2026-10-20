@@ -31,6 +31,8 @@ PRD ref: `prd.md > The Core Journey`.
 - **Jinja2** (comes with Flask) — HTML templates with `{{ placeholders }}` filled from Python. Docs: https://jinja.palletsprojects.com/
 - **requests** — makes the web calls to Moodle. Docs: https://requests.readthedocs.io/
 - **python-dotenv** — loads the key from `.env`. Docs: https://pypi.org/project/python-dotenv/
+- **pypdf** — reads text from module PDFs for automatic weights (added in slice 7). Docs: https://pypdf.readthedocs.io/
+- **truststore** — HTTPS via the Windows certificate store (added in slice 1). Docs: https://truststore.readthedocs.io/
 - **pytest** — tests for the pure logic (priority, EC detection, month grouping). Docs: https://docs.pytest.org/
 - **Plain HTML + CSS**, almost no JavaScript — forms and links do the work, keeping the browser side simple.
 
@@ -85,6 +87,13 @@ Each POST updates `tracker.json` then redirects back (no page JavaScript needed)
 
 ### Templates and Styles (`templates/`, `static/style.css`)
 `base.html` (layout, nav: Dashboard · Completed, offline banner), `dashboard.html`, `module.html`, `completed.html`; one stylesheet implementing **Look and Feel**.
+
+### Weight Finder (`weight_finder.py`)
+Added during the build (slice 7). Finds assessment weights in each module's Moodle content.
+- Pure part (tested): `find_weights(text, source)` pulls "weight findings" (label text before a %, the %, type such as coursework/quiz/exam/assessment, number, and whether it's a per-item or combined figure) from lines that mention an assessment word and skips noise (pass marks, pass rates, "longer time"). `match(findings, items)` pairs findings with assessments by type + number (e.g. "CW 1 (Analysis) … 45%" ↔ "Coursework 1 (Analysis) Submission Area"); per-item figures ("each … 2.5%") beat combined ones.
+- Fetch part: `core_course_get_contents` → section summaries, labels and pages as text, plus PDFs whose name looks like an overview/intro/module spec/assessment schedule (downloaded in memory with the token; read with `pypdf`).
+- Runs automatically in a background thread (it downloads a few MB, so not inside a page load): started when a page loads and a module has never been scanned, or has an unweighted assessment and hasn't been scanned for a day. While it runs the page shows "Finding weights…" and refreshes itself. Results are saved in `tracker.json`.
+PRD ref: `prd.md > Weights and Priority`.
 
 ### Settings (`settings.json`)
 Editable without touching code:

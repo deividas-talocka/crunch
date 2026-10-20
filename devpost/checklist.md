@@ -69,6 +69,16 @@ Build mode: fast
   Learner check: Turn off Wi-Fi, reload the dashboard, and confirm you see the offline message with your assessments still there.
   Commit: `Add offline fallback and README`
 
+- [x] **7. Weights fill themselves in**
+  Becomes usable: The app finds weights by itself — no button. In the background (first run, and whenever a module has an unweighted assessment not checked in the last day) it reads each module's Moodle page text and intro/spec/schedule PDFs, fills in weights with their source shown ("45% · from L0_Intro_City2026.pdf"), lists anything it found but couldn't match (e.g. "Examination 70%"), and uses a found exam weight when you add an exam without one. A small "edit" link keeps manual correction as a backup.
+  Why now: Learner chose to bring the deferred auto-weights feature into the PoC after the investigation found weights for all four modules; built on the finished core.
+  PRD ref: `prd.md > Weights and Priority`
+  Spec ref: `spec.md > Components` (Weight Finder), `spec.md > External Services and Dependencies`, `spec.md > Data Model`
+  Build: `weight_finder.py` (pure: extract weight findings from text, match them to assessments; fetch: gather page text and selected PDFs via `core_course_get_contents` + token file download, `pypdf`); background scan started from page loads when needed, with a "Finding weights…" note and self-refresh while it runs; store `weight`, `weight_source`, and per-module findings in `tracker.json`; never overwrite a weight I typed; module view shows source + edit; tests using the real sentences found.
+  Verify (mechanical): `pytest` passes (extraction + matching on the real lines); run the finder against real Moodle with temp storage and confirm IN2013 Quiz 1 = 2.5, Coursework 1 = 45, IN2015 Assessment 1 = 40, Assessment 2 = 60, and "Examination 70%" listed for IN2029; a typed weight is not overwritten.
+  Learner check: Open the dashboard, wait for the "Finding weights…" note to clear, and check the colours and sources match your modules' real weights.
+  Commit: `Find weights automatically from module pages and PDFs`
+
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 3 (real dashboard with priority colours): feedback on look and behavior shapes slices 4–6
@@ -98,5 +108,6 @@ Activity mode:
 - EC detection matches keywords anywhere in the name, not only in brackets — real names include "(Extenuating Circumstances and extensions)" and "- Extenuating Circumstances and extensions".
 - Checkpoint feedback (after slice 3): month view uses ◀/▶ buttons with two months at a time instead of a sideways scroll; month tables padded to equal height; optional assessments detected automatically (no closing date, "formative"/"practice"/"optional" in the name, or "no mark"-style description) and listed in the module view with a "Counts" override — learner: "DSA quizzes are optional", "the formative activity is not an assessment". Moodle descriptions didn't reliably say "optional", hence the combined rule. PRD updated.
 - Completion calls run in parallel and only for assessments that have opened; `fetch_snapshot` now takes the module-code pattern so it only queries real modules — one call per assessment took ~2.4s sequentially. Verified against real data: Moodle reports DSA Quiz 1 as finished.
+- Added slice 7 (automatic weights) — learner asked to try it after the core; an investigation found weights for all four modules (IN2002 overview PDF, IN2013 intro PDF, IN2015 page label, IN2029 assessment schedule PDF). Learner chose fully automatic finding with no button ("always find the weights by itself"), so it runs in the background when needed; manual entry kept as a small "edit" backup on the agent's recommendation, which the learner accepted. Moved from `scope.md > Later` into the PoC.
 - Confirmed: coursework is Moodle Assignment (no Turnitin); all planned functions answered with this token. DSA quizzes have no closing date → module view only, per `spec.md > Important Failure Modes`.
 

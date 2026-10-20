@@ -4,7 +4,7 @@
 <p><a href="{{ url_for('dashboard') }}">← Dashboard</a></p>
 <h1 class="page-title"><span class="module-code">{{ module.code }}</span> {{ module.title[module.code|length:] }}</h1>
 <div class="module-intro">
-  <p class="muted">{{ module.left }} left · Enter each assessment's weight from the module's intro slides, or mark optional ones "Doesn't count".</p>
+  <p class="muted">{{ module.left }} left · Weights are found automatically from this module's Moodle page and files — use "edit" to correct one, or mark optional work "Doesn't count".</p>
   <a class="button secondary{{ ' active' if show_ec }}" href="?{{ '' if show_ec else 'ec=1' }}">{{ 'Hide EC versions' if show_ec else 'Show EC versions' }}</a>
 </div>
 
@@ -22,10 +22,21 @@
         <td>{{ r.close_str if r.close else 'No closing date' }}</td>
         <td>{{ r.time_str }}</td>
         <td>
+          {% set weight_form %}
           <form method="post" action="{{ url_for('set_weight', assessment_id=r.id) }}" class="inline">
             <input name="weight" type="number" step="any" min="0" max="100" placeholder="%" value="{{ r.weight if r.weight is not none }}">
             <button type="submit">Save</button>
           </form>
+          {% endset %}
+          {% if r.weight is not none %}
+          <div class="weight-found">
+            <strong>{{ r.weight }}%</strong>
+            <span class="weight-source">{{ ('from ' ~ r.weight_source) if r.weight_source else 'entered by you' }}</span>
+            <details class="edit"><summary>edit</summary>{{ weight_form }}</details>
+          </div>
+          {% else %}
+          {{ weight_form }}
+          {% endif %}
         </td>
         <td>
           {% if r.priority %}<span class="badge badge-{{ r.priority }}">{{ r.priority|capitalize }}</span>
@@ -51,6 +62,22 @@
     </tbody>
   </table>
 </div>
+
+{% set scan = view.scans.get(module.id|string) %}
+{% if scan and scan.unmatched %}
+<h2 class="section-title spaced">Also found in your module files</h2>
+<p class="muted">Weights the app found but couldn't match to a Moodle assessment — usually exams or work marked outside Moodle. Exam weights here are used when you add the exam.</p>
+<div class="panel">
+  <table>
+    <thead><tr><th>Found</th><th>Weight</th><th>Where</th></tr></thead>
+    <tbody>
+      {% for f in scan.unmatched %}
+      <tr><td class="name">{{ f.label }}</td><td>{{ f.percent }}%</td><td class="muted">{{ f.source }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
 
 <h2 class="section-title spaced">Add an exam</h2>
 <p class="muted">Written exams aren't on Moodle, so add them here. You'll tick them off yourself.</p>

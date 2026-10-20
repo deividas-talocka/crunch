@@ -48,7 +48,9 @@ Each row in the month view shows: **module, assessment name, weight, priority, o
 - [ ] An assessment appears under the month of its closing date.
 
 ### Weights and Priority
-- Weights are entered manually in the module view (`scope.md > Later`: auto-reading slides is deferred).
+- Revised during the build: weights are **found automatically, with no button**: in the background (on first run, and whenever a module has an unweighted assessment not checked in the last day) the app reads each module's Moodle page text and its intro / module spec / assessment schedule PDFs, fills in matching weights, and shows the source (e.g. "45% · from L0_Intro_City2026.pdf"). Findings it can't match to a Moodle entry (e.g. "Examination 70%") are listed on the module page and used when adding that exam. A small **edit** link stays as a backup; a weight I type is never overwritten.
+- [ ] After the "Finding weights…" note clears, the app has set IN2013 quizzes to 2.5% (Low) and Coursework 1 to 45% (Medium), IN2015 Assessment 1/2 to 40%/60%, each showing its source file or page.
+- Originally: weights entered manually in the module view.
 - Priority from weight: **≤10% Low**, **over 10% to 50% Medium**, **over 50% High**.
 - [ ] Entering 2.5% shows green Low; 30% shows yellow Medium; 70% shows red High.
 - [ ] An assessment with no weight shows "⚠ Needs weight" in the month view instead of a priority.
@@ -100,10 +102,9 @@ Added during `4-spec`: written exams are not on Moodle, so they'd otherwise be m
 Dashboard with module summary and side-by-side month tables; Moodle loading for current modules; weight entry, "Doesn't count", and "Add exam" in the module view; colour-coded priority; ⚠ Needs weight label; EC show/hide button; completion detection from Moodle with manual-tick fallback; Completed area; offline message.
 
 ## Deferred From the POC
-- Reading weights automatically from module introductory slides — hard to do reliably across different lecturers' formats.
+- (Reading weights automatically was deferred, then brought into the PoC during the build — see `Weights and Priority`.)
 
 ## Possible Later Enhancements
-- Auto-read weights from slides (see above).
 - A calendar view (raised at the build checkpoint; learner unsure of the details — "forget about it for now, I'll get back to you").
 
 ## Non-Goals

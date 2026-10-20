@@ -58,6 +58,18 @@ a.brand:hover { text-decoration: none; }
   border-bottom: 1px solid #5a4416; font-weight: 600;
 }
 
+.banner-info { background: #10233a; color: var(--accent); border-bottom-color: #1d3b5e; display: flex; align-items: center; gap: 10px; }
+.spinner {
+  width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(106, 168, 240, .3);
+  border-top-color: var(--accent); animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.weight-found { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.weight-source { font-size: 12px; color: var(--muted); }
+details.edit summary { cursor: pointer; font-size: 12px; color: var(--accent); list-style: none; }
+details.edit summary::-webkit-details-marker { display: none; }
+details.edit[open] summary { margin-bottom: 6px; }
+
 main { max-width: 1600px; margin: 0 auto; padding: 28px 32px 56px; }
 section { margin-bottom: 36px; }
 .section-title {
