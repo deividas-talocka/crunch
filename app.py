@@ -26,6 +26,7 @@ def load_view(show_ec=False):
     offline = False
     try:
         snapshot = moodle_client.fetch_snapshot(settings["module_code_pattern"])
+        snapshot["fetched_at"] = datetime.now().timestamp()
         storage.save_cache(snapshot)
     except MoodleError:
         # Offline: show the last assessments we loaded, with the offline banner.
@@ -40,6 +41,9 @@ def load_view(show_ec=False):
         weight_finder.start(weight_finder.courses_needing_scan(all_rows, notes))
     view["finding_weights"] = weight_finder.is_running()
     view["helper"] = helper.answers(view)
+    fetched = snapshot.get("fetched_at")
+    view["updated"] = datetime.fromtimestamp(fetched).strftime("%a %d %b, %H:%M") if fetched else None
+    view["github_url"] = settings.get("github_url") or None
     view["scans"] = notes.get("scans", {})
     return view
 

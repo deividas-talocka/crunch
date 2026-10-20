@@ -34,6 +34,20 @@
     {% block content %}{% endblock %}
   </main>
 
+  <footer class="footer">
+    <div class="footer-brand">
+      <img src="{{ url_for('static', filename='favicon.svg') }}" alt="">
+      <span><strong>Crunch</strong> · What matters when crunch time hits</span>
+    </div>
+    <div class="footer-meta">
+      {% if view and view.updated %}
+      <span>{{ 'Last loaded' if view.offline else 'Updated from Moodle' }} {{ view.updated }}</span>
+      {% endif %}
+      <span>Made by Deividas{% if view and view.github_url %} · <a href="{{ view.github_url }}" target="_blank" rel="noopener">GitHub</a>{% endif %}</span>
+    </div>
+    <p class="footer-note">Unofficial student project — not affiliated with City St George's, University of London.</p>
+  </footer>
+
   {% if view and view.helper %}
   <button class="helper-toggle" type="button" aria-controls="helper" aria-expanded="false">
     <img src="{{ url_for('static', filename='favicon.svg') }}" alt=""><span>Ask Crunch</span>

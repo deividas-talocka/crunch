@@ -104,6 +104,7 @@ Build mode: fast
 - [x] Top bar redesign: glassier bar with gradient glow line, larger logo and name with divided italic slogan, pill tabs with the current page highlighted, completed-count bubble (learner request) — 43 tests pass; checked by screenshot on two pages.
 - [x] Overdue work now counts in a module's "left" number (learner agreed) — 43 tests pass.
 - [x] Free rule-based "Ask Crunch" helper in a right-edge sidebar with three questions (learner chose option 1: no AI service) — tests/test_helper.py; 48 tests pass; checked open and closed by screenshot on real data.
+- [x] Footer: logo + slogan, "Updated from Moodle <time>" ("Last loaded" when offline), "Made by Deividas", optional GitHub link via settings.json github_url (fill in during 6-ship), and an unofficial / not-affiliated note — learner agreed; 49 tests pass; checked by screenshot.
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

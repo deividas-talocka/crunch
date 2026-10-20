@@ -295,3 +295,19 @@ body::after {
 
 main { padding-right: 64px; }
 @media (max-width: 700px) { main { padding-right: 32px; } }
+
+/* Footer */
+.footer {
+  position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px;
+  max-width: 1600px; margin: 0 auto; padding: 22px 64px 28px 32px; color: var(--muted); font-size: 13px;
+}
+.footer::before {
+  content: ""; position: absolute; top: 0; left: 32px; right: 64px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+.footer-brand { display: flex; align-items: center; gap: 10px; }
+.footer-brand img { width: 20px; height: 20px; opacity: .85; }
+.footer-brand strong { color: var(--text); }
+.footer-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.footer-note { flex-basis: 100%; margin: 0; font-size: 12px; opacity: .75; }
+@media (max-width: 700px) { .footer { padding-right: 32px; } .footer::before { right: 32px; } }

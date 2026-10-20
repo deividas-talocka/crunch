@@ -63,6 +63,13 @@ def test_assessment_page_shows_details_and_moodle_link(client):
     assert client.get("/assessment/nope").status_code == 404
 
 
+def test_footer(client):
+    html = client.get("/").get_data(as_text=True)
+    assert "Updated from Moodle" in html and "Made by Deividas" in html
+    assert "not affiliated with City St George's" in html
+    assert ">GitHub<" not in html  # no repository link until github_url is set
+
+
 def test_module_page_links_to_moodle_course(client, monkeypatch):
     monkeypatch.setattr(moodle_client, "_settings", lambda: ("https://moodle.example", "token"))
     html = client.get("/module/1").get_data(as_text=True)
