@@ -5,7 +5,10 @@
 <h1 class="page-title"><span class="module-code">{{ module.code }}</span> {{ module.title[module.code|length:] }}</h1>
 <div class="module-intro">
   <p class="muted">{{ module.left }} left · Weights are found automatically from this module's Moodle page and files — use "edit" to correct one, or mark optional work "Doesn't count".</p>
-  <a class="button secondary{{ ' active' if show_ec }}" href="?{{ '' if show_ec else 'ec=1' }}">{{ 'Hide EC versions' if show_ec else 'Show EC versions' }}</a>
+  <div class="detail-actions">
+    <a class="button secondary{{ ' active' if show_ec }}" href="?{{ '' if show_ec else 'ec=1' }}">{{ 'Hide EC versions' if show_ec else 'Show EC versions' }}</a>
+    {% if moodle_url %}<a class="button" href="{{ moodle_url }}" target="_blank" rel="noopener">Open module in Moodle ↗</a>{% endif %}
+  </div>
 </div>
 
 <div class="panel">

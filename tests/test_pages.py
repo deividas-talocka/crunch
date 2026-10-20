@@ -63,6 +63,12 @@ def test_assessment_page_shows_details_and_moodle_link(client):
     assert client.get("/assessment/nope").status_code == 404
 
 
+def test_module_page_links_to_moodle_course(client, monkeypatch):
+    monkeypatch.setattr(moodle_client, "_settings", lambda: ("https://moodle.example", "token"))
+    html = client.get("/module/1").get_data(as_text=True)
+    assert 'href="https://moodle.example/course/view.php?id=1"' in html and "Open module in Moodle" in html
+
+
 def test_overdue_section(client):
     storage.update_assessment("assign-3", manual_done=False)
     SNAPSHOT["assessments"][2]["completed"] = False

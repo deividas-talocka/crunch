@@ -76,7 +76,11 @@ def module(course_id):
     if not show_ec:
         found["items"] = [r for r in found["items"] if not r["ec"]]
         found["optional"] = [r for r in found["optional"] if not r["ec"]]
-    return render_template("module.html", view=view, module=found, show_ec=show_ec)
+    try:
+        moodle_url = f"{moodle_client._settings()[0]}/course/view.php?id={course_id}"
+    except MoodleError:
+        moodle_url = None
+    return render_template("module.html", view=view, module=found, show_ec=show_ec, moodle_url=moodle_url)
 
 
 def parse_weight(raw):
