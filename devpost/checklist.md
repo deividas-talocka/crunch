@@ -82,7 +82,7 @@ Build mode: fast
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 3 (real dashboard with priority colours): feedback on look and behavior shapes slices 4–6
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
 
@@ -105,7 +105,7 @@ Build mode: fast
 - [x] Overdue work now counts in a module's "left" number (learner agreed) — 43 tests pass.
 - [x] Free rule-based "Ask Crunch" helper in a right-edge sidebar with three questions (learner chose option 1: no AI service) — tests/test_helper.py; 48 tests pass; checked open and closed by screenshot on real data.
 - [x] Footer: logo + slogan, "Updated from Moodle <time>" ("Last loaded" when offline), "Made by Deividas", optional GitHub link via settings.json github_url (fill in during 6-ship), and an unofficial / not-affiliated note — learner agreed; 49 tests pass; checked by screenshot.
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved and learner confirms ready to ship ("i think its ready"); 49 tests pass
 
 ## Code Tour and App Map
 
