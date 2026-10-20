@@ -126,7 +126,7 @@ def test_open_status():
     now = ts(2026, 10, 20, 12)
     assert tracker.open_status(ts(2026, 10, 19, 17), ts(2026, 10, 25, 17), now) == "open"
     assert tracker.open_status(ts(2026, 11, 2, 17), ts(2026, 11, 8, 17), now) == "not_open"
-    assert tracker.open_status(None, ts(2026, 11, 19, 9), now) == "open"  # no opening date: available
+    assert tracker.open_status(None, ts(2026, 11, 19, 9), now) == "not_open"  # no opening date: not out yet
     assert tracker.open_status(ts(2026, 10, 1), ts(2026, 10, 5), now) == "closed"
 
 

@@ -45,11 +45,11 @@ def optional_reason(item, settings):
 
 
 def open_status(open_ts, close_ts, now_ts):
-    """"open" (ready to do now), "not_open" (opens later), or "closed"."""
+    """"open" (ready to do now), "not_open" (opens later, or no opening date yet), or "closed"."""
     if close_ts and close_ts < now_ts:
         return "closed"
-    if open_ts and open_ts > now_ts:
-        return "not_open"
+    if not open_ts or open_ts > now_ts:
+        return "not_open"  # no opening date means it isn't out yet
     return "open"
 
 

@@ -86,6 +86,7 @@ Build mode: fast
 
 ## Final Review
 
+- [x] No opening date shows a red "not open yet" light (learner: "no opening date means it's not out yet") — verified: IN2015 Assessment 1 now red; tests pass.
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
