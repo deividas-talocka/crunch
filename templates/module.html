@@ -13,7 +13,7 @@
     <tbody>
       {% for r in module["items"] %}
       <tr class="{{ 'ec-row' if r.ec }}">
-        <td>{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
+        <td>{% if r.status != 'closed' %}<span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{% endif %}{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
         <td>{{ r.type }}</td>
         <td>{{ r.open_str }}</td>
         <td>{{ r.close_str if r.close else 'No closing date' }}</td>

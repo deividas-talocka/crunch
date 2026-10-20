@@ -44,6 +44,15 @@ def optional_reason(item, settings):
     return None
 
 
+def open_status(open_ts, close_ts, now_ts):
+    """"open" (ready to do now), "not_open" (opens later), or "closed"."""
+    if close_ts and close_ts < now_ts:
+        return "closed"
+    if open_ts and open_ts > now_ts:
+        return "not_open"
+    return "open"
+
+
 def assessment_type(name, kind, type_keywords):
     lowered = name.lower()
     for keyword, label in type_keywords.items():
@@ -132,6 +141,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "close_str": _fmt_date(item["close"]), "time_str": _fmt_time(item["close"]),
             "completed": bool(done), "moodle_completed": bool(item["completed"]),
             "manual_exam": bool(item.get("manual_exam")), "optional_reason": reason,
+            "status": open_status(item["open"], item["close"], now_ts),
         }
         if reason:
             module["optional"].append(row)  # listed in the module view only, with a "Counts" button

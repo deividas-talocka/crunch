@@ -77,6 +77,12 @@ td:not(:nth-child(2)) { white-space: nowrap; }
 tbody tr:hover { background: var(--panel-2); }
 td.code { color: var(--accent); font-weight: 600; }
 
+/* Open / not-yet-open lights */
+.light { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+.light-open { background: #43d36b; box-shadow: 0 0 6px #43d36b; }
+.light-not_open { background: #e5484d; box-shadow: 0 0 6px #e5484d; }
+.legend { display: flex; gap: 16px; font-size: 13px; margin-left: auto; }
+
 /* Priority */
 .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #111; }
 .badge-high { background: var(--high); color: #fff; }

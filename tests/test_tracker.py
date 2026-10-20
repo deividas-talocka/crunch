@@ -122,6 +122,14 @@ def test_weights_and_exclusions_from_notes():
     assert view["modules"][0]["left"] == 2  # practice quiz no longer counted
 
 
+def test_open_status():
+    now = ts(2026, 10, 20, 12)
+    assert tracker.open_status(ts(2026, 10, 19, 17), ts(2026, 10, 25, 17), now) == "open"
+    assert tracker.open_status(ts(2026, 11, 2, 17), ts(2026, 11, 8, 17), now) == "not_open"
+    assert tracker.open_status(None, ts(2026, 11, 19, 9), now) == "open"  # no opening date: available
+    assert tracker.open_status(ts(2026, 10, 1), ts(2026, 10, 5), now) == "closed"
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])

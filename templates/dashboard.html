@@ -18,6 +18,10 @@
 <section>
   <div class="months-header">
     <h2 class="section-title">Upcoming by month</h2>
+    <div class="legend muted">
+      <span><span class="light light-open"></span> Open now</span>
+      <span><span class="light light-not_open"></span> Not open yet</span>
+    </div>
     <div class="month-nav">
       {% set ec = '&ec=1' if show_ec else '' %}
       {% if prev_m is not none %}<a class="button secondary" href="?m={{ prev_m }}{{ ec|safe }}">◀ Previous</a>
@@ -38,7 +42,7 @@
           {% for r in month.rows %}
           <tr class="{{ 'ec-row' if r.ec }}">
             <td class="code">{{ r.module_code }}</td>
-            <td>{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
+            <td><span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
             <td>{{ r.type }}</td>
             <td>{{ (r.weight|string + '%') if r.weight is not none else '—' }}</td>
             <td>

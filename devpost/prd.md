@@ -42,7 +42,9 @@ Source: `scope.md > The Unique Kernel`, `scope.md > The Core Loop`.
 
 ### Assessment Rows
 Each row in the month view shows: **module, assessment name, weight, priority, opening date, closing date, closing time**. Type (quiz, exam, coursework, viva…) is shown too (`scope.md > The POC Boundary`).
+- Each row also has a **status light** (added at the build checkpoint): green = open now and ready to do, red = not open yet. A legend explains it.
 - [ ] Every assessment row shows all seven fields plus its type.
+- [ ] A quiz open 19–25 Oct shows a green light on 20 Oct; one opening 2 Nov shows red.
 - [ ] An assessment appears under the month of its closing date.
 
 ### Weights and Priority
