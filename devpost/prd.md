@@ -3,7 +3,7 @@ doc: prd
 status: approved
 ---
 
-# Assessment Tracker — Product Requirements
+# Crunch — Product Requirements
 
 A dark, simplified "better Moodle" dashboard for me, a university student, that shows only my current modules' real assessments, month by month, prioritised by weight.
 Source: `scope.md > The Unique Kernel`, `scope.md > The Core Loop`.

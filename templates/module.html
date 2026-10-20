@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ module.code }} — Assessment Tracker{% endblock %}
+{% block title %}{{ module.code }} — Crunch{% endblock %}
 {% block content %}
 <p><a href="{{ url_for('dashboard') }}">← Dashboard</a></p>
 <h1 class="page-title"><span class="module-code">{{ module.code }}</span> {{ module.title[module.code|length:] }}</h1>

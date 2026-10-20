@@ -1,6 +1,6 @@
-# Assessment Tracker
+# Crunch
 
-A focused view of my upcoming university assessments, pulled from Moodle, with the noise stripped out and ranked by how much they're worth.
+Your assessments, ranked by what matters. A focused view of my upcoming university assessments, pulled from Moodle, with the noise stripped out and ranked by how much they're worth.
 
 Moodle's dashboard timeline mixes everything together: last year's modules, EC / extra-time duplicates, practice quizzes. This app shows only the assessments that count for this year's modules, month by month, with a colour-coded priority from each assessment's weight:
 

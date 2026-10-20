@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Assessment Tracker{% endblock %}</title>
+  <title>{% block title %}Crunch{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   {% if view and view.finding_weights %}<meta http-equiv="refresh" content="5">{% endif %}
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="{{ url_for('dashboard') }}">Assessment Tracker <span class="brand-sub">· for City St George's students</span></a>
+    <a class="brand" href="{{ url_for('dashboard') }}">Crunch <span class="brand-sub">· for City St George's students</span></a>
     <nav>
       <a href="{{ url_for('dashboard') }}">Dashboard</a>
       <a href="{{ url_for('completed') }}">Completed</a>

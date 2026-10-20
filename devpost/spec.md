@@ -3,7 +3,7 @@ doc: spec
 status: approved
 ---
 
-# Assessment Tracker — Technical Spec
+# Crunch — Technical Spec
 
 ## How This Works, In Plain Language
 The app is a small **Python program using Flask** that runs on my laptop. I open `http://localhost:5000` in my browser and Flask sends back the dashboard as a web page.
