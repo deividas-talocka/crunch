@@ -96,6 +96,7 @@ Build mode: fast
 - [x] ⏮ First / Last ⏭ buttons beside Previous/Next (learner request) — 32 tests pass; on real data Last jumps to Dec 2026–Jan 2027.
 - [x] Assessment page (click any name: details, countdown, Moodle description, actions, Open in Moodle) and Overdue area above the months (learner requests) — 40 tests pass; detail page checked by screenshot on real data; no overdue items currently, so the area is hidden.
 - [x] "Open module in Moodle" button on each module page (learner request) — links to /course/view.php?id=<module>; 41 tests pass; real link checked.
+- [x] More interesting background: slow-drifting blue/purple/teal glows and a faint fading dot grid, CSS only, still when reduced motion is on (learner request: keep everything else) — checked by screenshot.
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

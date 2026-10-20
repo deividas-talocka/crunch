@@ -214,3 +214,27 @@ a.row-link:hover { color: var(--accent); text-decoration: none; }
 .overdue-title { color: #ff7b78; }
 .panel.overdue { border-color: rgba(239, 83, 80, .45); box-shadow: var(--shadow), 0 0 0 1px rgba(239, 83, 80, .12) inset; margin-top: 0; }
 .overdue-when { color: #ff7b78; }
+
+/* Background: slow-drifting aurora glows + a faint dot grid, behind everything */
+body { position: relative; }
+body::before, body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+body::before {
+  background:
+    radial-gradient(40vw 40vw at 15% 20%, rgba(106, 168, 240, .30), transparent 60%),
+    radial-gradient(35vw 35vw at 85% 15%, rgba(150, 110, 240, .24), transparent 60%),
+    radial-gradient(45vw 45vw at 70% 90%, rgba(60, 200, 180, .16), transparent 60%);
+  filter: blur(20px);
+  animation: drift 40s ease-in-out infinite alternate;
+}
+body::after {
+  background-image: radial-gradient(rgba(255, 255, 255, .10) 1px, transparent 1px);
+  background-size: 26px 26px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, .5) 45%, transparent 85%);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, .5) 45%, transparent 85%);
+}
+@keyframes drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(-3vw, 2vh) scale(1.08); }
+  100% { transform: translate(3vw, -2vh) scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
