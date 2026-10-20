@@ -96,5 +96,6 @@ Activity mode:
 - Added `scripts/save_token.py` (token via the Moodle app launch page) — City uses single sign-on, so Security keys only showed an RSS key; the mobile web service token is created by the app's launch flow.
 - "Current modules" = in-progress courses whose name starts with a module code (`settings.json > module_code_pattern`) — Moodle's "in progress" also includes non-module sites (Library Induction, Academic Skills, etc.).
 - EC detection matches keywords anywhere in the name, not only in brackets — real names include "(Extenuating Circumstances and extensions)" and "- Extenuating Circumstances and extensions".
+- Checkpoint feedback (after slice 3): month view uses ◀/▶ buttons with two months at a time instead of a sideways scroll; month tables padded to equal height; optional assessments detected automatically (no closing date, "formative"/"practice"/"optional" in the name, or "no mark"-style description) and listed in the module view with a "Counts" override — learner: "DSA quizzes are optional", "the formative activity is not an assessment". Moodle descriptions didn't reliably say "optional", hence the combined rule. PRD updated.
 - Confirmed: coursework is Moodle Assignment (no Turnitin); all planned functions answered with this token. DSA quizzes have no closing date → module view only, per `spec.md > Important Failure Modes`.
 

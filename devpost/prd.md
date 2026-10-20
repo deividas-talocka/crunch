@@ -20,7 +20,7 @@ Source: `scope.md > The Unique Kernel`, `scope.md > The Core Loop`.
 ## Screens and Layout
 - **Dashboard** (main screen)
   - **Module summary** — one entry per current module: module name + number of assessments left.
-  - **Month view** — month name as a heading with a table of its assessments beneath; the next month sits beside it, and so on.
+  - **Month view** — two months side by side, each a month heading with a table of its assessments; **◀ Previous / Next ▶ buttons** move through the other months (revised at the build checkpoint: buttons instead of a sideways scroll). Every month's table is the same height, even when empty.
   - **EC button** — shows/hides EC and extra-time versions.
 - **Module view** — opened by clicking a module: lists that module's Moodle assessments, where I enter weights or mark "Doesn't count."
 - **Completed** — a separate place holding all completed assessments for review.
@@ -53,7 +53,9 @@ Each row in the month view shows: **module, assessment name, weight, priority, o
 
 ### Excluding Non-Contributing Assessments
 - Optional assessments that don't count toward the module are not included. In the module view, I mark them **Doesn't count**.
+- Revised at the build checkpoint: the app also **detects optional assessments automatically** — no closing date (e.g. the DSA MCQs), "formative"/"practice"/"optional" in the name, or a description like "no mark". They're listed in the module view under **Optional — not included** with the reason and a **Counts** button to bring one back. "Doesn't count" items go to the same list, so they can be undone.
 - [ ] Marking an assessment "Doesn't count" removes it from the month view, module counts, and Completed.
+- [ ] The DSA quizzes (no closing date) and the Formative Activity appear only under "Optional — not included"; pressing "Counts" brings one back.
 
 ### EC and Extra-Time Versions
 - EC and extra-time duplicates are hidden by default. The EC button shows them, each clearly labelled as EC/extra-time.

@@ -54,12 +54,19 @@ a.module-card:hover { border-color: var(--accent); text-decoration: none; }
 .module-title { color: var(--muted); font-size: 13px; margin: 2px 0 10px; }
 .module-left strong { font-size: 22px; margin-right: 4px; }
 
-/* Month columns, side by side */
-.months { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; align-items: flex-start; }
+/* Month columns, side by side, paged with the arrow buttons */
+.months-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.months-header .section-title { margin: 0; }
+.month-nav { display: flex; gap: 8px; }
+.button.disabled { opacity: .35; cursor: default; }
+.months { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
+@media (max-width: 1100px) { .months { grid-template-columns: 1fr; } }
 .month {
-  flex: 0 0 auto; min-width: 360px; background: var(--panel);
+  min-width: 0; overflow-x: auto; background: var(--panel);
   border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
 }
+tr.filler td { height: 39px; }
+tbody tr.filler:hover { background: transparent; }
 .month h3 { margin: 0 0 10px; font-size: 17px; }
 .empty { margin: 4px 0; }
 
@@ -83,6 +90,8 @@ td.code { color: var(--accent); font-weight: 600; }
 /* Module view */
 .page-title { margin: 4px 0 4px; font-size: 24px; font-weight: 600; }
 .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; overflow-x: auto; margin-top: 16px; }
+.section-title.spaced { margin-top: 28px; }
+.panel.optional td { opacity: .75; }
 form.inline { display: inline-flex; gap: 6px; margin: 0; }
 input[type="number"], input[type="text"], input[type="datetime-local"] {
   background: var(--bg); color: var(--text); border: 1px solid var(--border);

@@ -1,6 +1,8 @@
 {
   "module_code_pattern": "^[A-Z]{2}\\d{4}",
   "ec_keywords": ["extra time", "ssp", "extenuating circumstances", "extension", "extensions"],
+  "optional_name_keywords": ["formative", "practice", "optional"],
+  "optional_description_phrases": ["no mark", "not assessed", "does not count", "do not count", "formative"],
   "type_keywords": {
     "viva": "Viva",
     "exam": "Exam",

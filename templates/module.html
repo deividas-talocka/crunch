@@ -40,4 +40,29 @@
     </tbody>
   </table>
 </div>
+
+{% if module.optional %}
+<h2 class="section-title spaced">Optional — not included</h2>
+<p class="muted">These don't appear on the dashboard. If one actually counts, press "Counts" to bring it back.</p>
+<div class="panel optional">
+  <table>
+    <thead><tr><th>Assessment</th><th>Type</th><th>Closes</th><th>Why it's here</th><th></th></tr></thead>
+    <tbody>
+      {% for r in module.optional %}
+      <tr>
+        <td>{{ r.name }}{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}</td>
+        <td>{{ r.type }}</td>
+        <td>{{ r.close_str if r.close else 'No closing date' }}</td>
+        <td class="muted">{{ r.optional_reason }}</td>
+        <td>
+          <form method="post" action="{{ url_for('include', assessment_id=r.id) }}" class="inline">
+            <button type="submit" class="secondary">Counts</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
 {% endblock %}

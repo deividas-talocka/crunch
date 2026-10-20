@@ -16,12 +16,20 @@
 </section>
 
 <section>
-  <h2 class="section-title">Upcoming by month</h2>
+  <div class="months-header">
+    <h2 class="section-title">Upcoming by month</h2>
+    <div class="month-nav">
+      {% set ec = '&ec=1' if show_ec else '' %}
+      {% if prev_m is not none %}<a class="button secondary" href="?m={{ prev_m }}{{ ec|safe }}">◀ Previous</a>
+      {% else %}<span class="button secondary disabled">◀ Previous</span>{% endif %}
+      {% if next_m is not none %}<a class="button secondary" href="?m={{ next_m }}{{ ec|safe }}">Next ▶</a>
+      {% else %}<span class="button secondary disabled">Next ▶</span>{% endif %}
+    </div>
+  </div>
   <div class="months">
-    {% for month in view.months %}
+    {% for month in months %}
     <div class="month">
       <h3>{{ month.label }}</h3>
-      {% if month.rows %}
       <table>
         <thead>
           <tr><th>Module</th><th>Assessment</th><th>Type</th><th>Weight</th><th>Priority</th><th>Opens</th><th>Closes</th><th>Time</th></tr>
@@ -42,11 +50,13 @@
             <td>{{ r.time_str }}</td>
           </tr>
           {% endfor %}
+          {% for i in range(view.max_rows - month.rows|length) %}
+          <tr class="filler">
+            <td colspan="8">{% if loop.first and not month.rows %}<span class="muted">No assessments</span>{% else %}&nbsp;{% endif %}</td>
+          </tr>
+          {% endfor %}
         </tbody>
       </table>
-      {% else %}
-      <p class="muted empty">No assessments</p>
-      {% endif %}
     </div>
     {% endfor %}
   </div>

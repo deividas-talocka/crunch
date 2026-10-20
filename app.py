@@ -34,10 +34,21 @@ def back(default="/"):
     return redirect(request.referrer or default)
 
 
+MONTHS_SHOWN = 2  # month columns visible at once; the arrow buttons move through the rest
+
+
 @app.route("/")
 def dashboard():
     show_ec = request.args.get("ec") == "1"
-    return render_template("dashboard.html", view=load_view(show_ec), show_ec=show_ec)
+    view = load_view(show_ec)
+    last_start = max(len(view["months"]) - MONTHS_SHOWN, 0)
+    start = min(max(request.args.get("m", 0, type=int), 0), last_start)
+    return render_template(
+        "dashboard.html", view=view, show_ec=show_ec,
+        months=view["months"][start:start + MONTHS_SHOWN],
+        prev_m=start - 1 if start > 0 else None,
+        next_m=start + 1 if start < last_start else None,
+    )
 
 
 @app.route("/module/<int:course_id>")
@@ -66,7 +77,14 @@ def set_weight(assessment_id):
 
 @app.post("/assessment/<assessment_id>/exclude")
 def exclude(assessment_id):
-    storage.update_assessment(assessment_id, excluded=True)
+    storage.update_assessment(assessment_id, excluded=True, included=False)
+    return back()
+
+
+@app.post("/assessment/<assessment_id>/include")
+def include(assessment_id):
+    """Undo "Doesn't count", or overrule the automatic optional check."""
+    storage.update_assessment(assessment_id, excluded=False, included=True)
     return back()
 
 

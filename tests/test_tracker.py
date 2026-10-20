@@ -70,11 +70,32 @@ def test_grouped_by_closing_month_from_current_month():
     assert [r["name"] for r in november["rows"]] == ["Coursework 1 (Analysis) Submission Area"]
 
 
-def test_no_closing_date_stays_out_of_months_but_counts_in_module():
+def test_no_closing_date_is_optional():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     names = [r["name"] for month in view["months"] for r in month["rows"]]
     assert "Practice quiz" not in names
-    assert view["modules"][0]["left"] == 3  # quiz 1, coursework 1, practice quiz
+    module = view["modules"][0]
+    assert module["left"] == 2  # quiz 1, coursework 1
+    assert [(r["name"], r["optional_reason"]) for r in module["optional"]] == [("Practice quiz", "No closing date")]
+
+
+def test_formative_detected_from_name_or_description():
+    s = SETTINGS
+    base = {"kind": "assign", "close": ts(2026, 11, 8, 17)}
+    assert tracker.optional_reason({**base, "name": "Formative Activity – SHA-256 Hash Challenge"}, s)
+    assert tracker.optional_reason({**base, "name": "Hash challenge",
+                                    "description": "It is just a fun! ... there is no mark for this activity."}, s)
+    assert tracker.optional_reason({**base, "name": "Coursework 1 (Analysis) Submission Area",
+                                    "description": "Please consult the Programme Handbook."}, s) is None
+    assert tracker.optional_reason({"kind": "exam", "close": None, "name": "DSA Exam"}, s) is None
+
+
+def test_counts_button_overrides_optional_and_doesnt_count_is_undoable():
+    notes = {"assessments": {"quiz-5": {"included": True}, "assign-3": {"excluded": True}}}
+    view = tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)
+    module = view["modules"][0]
+    assert "quiz-5" in [r["id"] for r in module["items"]]
+    assert [(r["id"], r["optional_reason"]) for r in module["optional"]] == [("assign-3", "Marked by you")]
 
 
 def test_show_ec_includes_labelled_versions():

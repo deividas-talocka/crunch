@@ -5,6 +5,7 @@ and returns plain Python data.
 """
 import html
 import os
+import re
 
 import requests
 import truststore
@@ -89,7 +90,12 @@ def assignments(course_ids):
 
 def _clean(text):
     """Moodle sends names HTML-escaped ("&amp;") and sometimes with double spaces."""
-    return " ".join(html.unescape(text).split())
+    return " ".join(html.unescape(text or "").split())
+
+
+def _plain(intro):
+    """An activity's description as plain text (it arrives as HTML)."""
+    return _clean(re.sub(r"<[^>]+>", " ", intro or ""))
 
 
 def fetch_snapshot():
@@ -104,14 +110,14 @@ def fetch_snapshot():
         for q in quizzes(ids):
             found.append({
                 "id": f"quiz-{q['id']}", "moodle_id": q["id"], "course_id": q["course"],
-                "name": _clean(q["name"]), "kind": "quiz",
+                "name": _clean(q["name"]), "kind": "quiz", "description": _plain(q.get("intro")),
                 "open": q.get("timeopen") or None, "close": q.get("timeclose") or None,
                 "completed": False,
             })
         for a in assignments(ids):
             found.append({
                 "id": f"assign-{a['id']}", "moodle_id": a["id"], "course_id": a["course"],
-                "name": _clean(a["name"]), "kind": "assign",
+                "name": _clean(a["name"]), "kind": "assign", "description": _plain(a.get("intro")),
                 "open": a.get("allowsubmissionsfromdate") or None, "close": a.get("duedate") or None,
                 "completed": False,
             })

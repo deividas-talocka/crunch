@@ -23,6 +23,27 @@ def is_ec(name, keywords):
     return any(re.search(rf"\b{re.escape(k.lower())}\b", lowered) for k in keywords)
 
 
+def optional_reason(item, settings):
+    """Why an assessment looks optional (doesn't count towards the module), or None.
+
+    No closing date, "formative"/"practice"/"optional" in the name, or a description
+    saying something like "no mark". Exams I add myself are never optional.
+    """
+    if item["kind"] == "exam":
+        return None
+    if not item["close"]:
+        return "No closing date"
+    name = item["name"].lower()
+    for keyword in settings["optional_name_keywords"]:
+        if re.search(rf"\b{re.escape(keyword)}\b", name):
+            return f'Name says "{keyword}"'
+    description = item.get("description", "").lower()
+    for phrase in settings["optional_description_phrases"]:
+        if re.search(rf"\b{re.escape(phrase)}\b", description):
+            return f'Description says "{phrase}"'
+    return None
+
+
 def assessment_type(name, kind, type_keywords):
     lowered = name.lower()
     for keyword, label in type_keywords.items():
@@ -76,7 +97,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
         if code:
             modules[course["id"]] = {
                 "id": course["id"], "code": code, "title": module_title(course["name"]),
-                "left": 0, "items": [],
+                "left": 0, "items": [], "optional": [],
             }
 
     items = list(snapshot["assessments"])
@@ -94,7 +115,11 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             continue  # not a current module (e.g. Library Induction)
         note = my_notes.get(item["id"], {})
         if note.get("excluded"):
-            continue  # marked "Doesn't count"
+            reason = "Marked by you"
+        elif note.get("included"):
+            reason = None  # I said it counts, whatever the automatic check thinks
+        else:
+            reason = optional_reason(item, settings)
         weight = item["weight"] if item.get("manual_exam") else note.get("weight")
         done = item["completed"] or item.get("manual_done") or note.get("manual_done", False)
         row = {
@@ -106,8 +131,11 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "close": item["close"], "open_str": _fmt_date(item["open"]),
             "close_str": _fmt_date(item["close"]), "time_str": _fmt_time(item["close"]),
             "completed": bool(done), "moodle_completed": bool(item["completed"]),
-            "manual_exam": bool(item.get("manual_exam")),
+            "manual_exam": bool(item.get("manual_exam")), "optional_reason": reason,
         }
+        if reason:
+            module["optional"].append(row)  # listed in the module view only, with a "Counts" button
+            continue
         module["items"].append(row)
         rows.append(row)
 
@@ -120,6 +148,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             if not r["ec"] and not r["completed"] and (r["close"] is None or r["close"] >= now_ts)
         )
         module["items"].sort(key=lambda r: (r["close"] is None, r["close"] or 0))
+        module["optional"].sort(key=lambda r: (r["close"] is None, r["close"] or 0))
 
     # Month columns: the current month through the last month with something due.
     start = (now.year, now.month)
@@ -137,5 +166,6 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
     return {
         "modules": sorted(modules.values(), key=lambda m: m["code"]),
         "months": months,
+        "max_rows": max([len(m["rows"]) for m in months] + [1]),  # keeps every month table the same height
         "completed": completed,
     }
