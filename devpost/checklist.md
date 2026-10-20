@@ -99,6 +99,7 @@ Build mode: fast
 - [x] More interesting background: slow-drifting blue/purple/teal glows and a faint fading dot grid, CSS only, still when reduced motion is on (learner request: keep everything else) — checked by screenshot.
 - [x] Slogan "What matters when crunch time hits" beside the logo (learner picked it over "Your assessments, ranked by what matters") (replacing "for City St George's students"); "Completed" renamed "Completed assessments" in the nav and page (learner request) — 41 tests pass.
 - [x] Quizzes with no closing date explained as "Optional practice quiz — no closing date, so it isn't assessed" (learner request for IN2002) — 41 tests pass; real IN2002 page checked.
+- [x] Modules with nothing left to do are hidden from the dashboard (learner: "so its purely focused on whats left to do"); overdue work keeps a module visible; "Every module is done" message — 42 tests pass; all four real modules still have work, so all show.
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

@@ -192,6 +192,15 @@ def test_countdown():
     assert tracker.countdown(None, now) is None
 
 
+def test_module_with_nothing_left_is_inactive_unless_overdue():
+    view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
+    assert view["modules"][0]["active"]
+    done = {"assessments": {"quiz-1": {"manual_done": True}, "assign-3": {"manual_done": True}}}
+    assert not tracker.build_view(SNAPSHOT, done, SETTINGS, now=NOW)["modules"][0]["active"]
+    later = datetime(2026, 11, 20)  # both deadlines passed, nothing done -> overdue keeps it on the dashboard
+    assert tracker.build_view(SNAPSHOT, {}, SETTINGS, now=later)["modules"][0]["active"]
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])

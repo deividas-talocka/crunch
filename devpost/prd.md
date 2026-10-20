@@ -19,7 +19,7 @@ Source: `scope.md > The Unique Kernel`, `scope.md > The Core Loop`.
 
 ## Screens and Layout
 - **Dashboard** (main screen)
-  - **Module summary** — one entry per current module: module name + number of assessments left.
+  - **Module summary** — one entry per current module: module name + number of assessments left. Revised at final review: a module with nothing left to do (no upcoming, overdue, or date-to-confirm items) is hidden from the dashboard; its page remains.
   - **Month view** — two months side by side, each a month heading with a table of its assessments; **◀ Previous / Next ▶ buttons** move through the other months (revised at the build checkpoint: buttons instead of a sideways scroll). Every month's table is the same height, even when empty.
   - **EC button** — shows/hides EC and extra-time versions.
 - **Module view** — opened by clicking a module (with an **Open module in Moodle** button for its resources, added at final review): lists that module's Moodle assessments, where I enter weights or mark "Doesn't count."

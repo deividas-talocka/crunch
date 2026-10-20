@@ -229,6 +229,11 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
         "next": min((r for r in counted_upcoming if r["close"]), key=lambda r: r["close"], default=None),
     }
 
+    overdue_modules = {r["module_id"] for r in overdue}
+    for module in modules.values():
+        # Shown on the dashboard only while there's something left to do in it.
+        module["active"] = module["left"] > 0 or module["id"] in overdue_modules
+
     return {
         "stats": stats,
         "modules": sorted(modules.values(), key=lambda m: m["code"]),

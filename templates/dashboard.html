@@ -26,14 +26,14 @@
 <section>
   <h2 class="section-title">Modules</h2>
   <div class="modules">
-    {% for m in view.modules %}
+    {% for m in view.modules if m.active %}
     <a class="module-card" href="{{ url_for('module', course_id=m.id) }}">
       <div class="module-code">{{ m.code }}</div>
       <div class="module-title">{{ m.title[m.code|length:] }}</div>
       <div class="module-left"><strong>{{ m.left }}</strong> left</div>
     </a>
     {% else %}
-    <p class="muted">No current modules found.</p>
+    <p class="muted">{{ 'Every module is done — nothing left to do. 🎉' if view.modules else 'No current modules found.' }}</p>
     {% endfor %}
   </div>
 </section>

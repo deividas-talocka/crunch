@@ -93,7 +93,10 @@ def test_finished_months_disappear_and_all_done_shows_nothing_coming_up(client):
     html = client.get("/?m=99").get_data(as_text=True)
     assert "October 2099" not in html and "January" in html  # the exam expected in January stays
     storage.update_assessment("exam-1", manual_done=True)
-    assert "Nothing coming up" in client.get("/").get_data(as_text=True)
+    html = client.get("/").get_data(as_text=True)
+    assert "Nothing coming up" in html
+    assert "Every module is done" in html and 'class="module-card"' not in html
+    assert client.get("/module/1").status_code == 200  # its page is still there
 
 
 def test_date_to_confirm_section_is_below_the_months(client):
