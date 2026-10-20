@@ -140,6 +140,17 @@ def test_added_exam_lands_in_its_month_with_priority():
     assert view["modules"][0]["left"] == 3
 
 
+def test_completed_moves_out_of_months_and_counts():
+    snapshot = {**SNAPSHOT, "assessments": [dict(a) for a in SNAPSHOT["assessments"]]}
+    snapshot["assessments"][0]["completed"] = True  # Moodle says quiz-1 is done
+    notes = {"assessments": {"assign-3": {"manual_done": True}}}  # I ticked coursework 1
+    view = tracker.build_view(snapshot, notes, SETTINGS, now=NOW)
+    in_months = [r["id"] for month in view["months"] for r in month["rows"]]
+    assert "quiz-1" not in in_months and "assign-3" not in in_months
+    assert {r["id"]: r["moodle_completed"] for r in view["completed"]} == {"quiz-1": True, "assign-3": False}
+    assert view["modules"][0]["left"] == 0
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])

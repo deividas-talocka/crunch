@@ -31,11 +31,19 @@
           {% if r.priority %}<span class="badge badge-{{ r.priority }}">{{ r.priority|capitalize }}</span>
           {% else %}<span class="needs-weight">⚠ Needs weight</span>{% endif %}
         </td>
-        <td>
+        <td><div class="actions">
+          {% if r.moodle_completed %}
+          <span class="done-label">✓ Done on Moodle</span>
+          {% else %}
+          <form method="post" action="{{ url_for('tick', assessment_id=r.id) }}" class="inline">
+            <input type="hidden" name="done" value="{{ '0' if r.completed else '1' }}">
+            <button type="submit" class="{{ 'secondary' if r.completed else '' }}">{{ 'Undo done' if r.completed else '✓ Mark done' }}</button>
+          </form>
+          {% endif %}
           <form method="post" action="{{ url_for('exclude', assessment_id=r.id) }}" class="inline">
             <button type="submit" class="secondary">Doesn't count</button>
           </form>
-        </td>
+        </div></td>
       </tr>
       {% else %}
       <tr><td colspan="8" class="muted">No assessments in this module.</td></tr>

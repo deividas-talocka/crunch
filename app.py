@@ -20,12 +20,13 @@ def load_settings():
 
 def load_view(show_ec=False):
     """Ask Moodle, merge in my notes, and build what the pages show."""
+    settings = load_settings()
     offline = False
     try:
-        snapshot = moodle_client.fetch_snapshot()
+        snapshot = moodle_client.fetch_snapshot(settings["module_code_pattern"])
     except MoodleError:
         snapshot, offline = {"courses": [], "assessments": []}, True
-    view = tracker.build_view(snapshot, storage.load_notes(), load_settings(), show_ec=show_ec)
+    view = tracker.build_view(snapshot, storage.load_notes(), settings, show_ec=show_ec)
     view["offline"] = offline
     return view
 
@@ -100,6 +101,18 @@ def set_weight(assessment_id):
 @app.post("/assessment/<assessment_id>/exclude")
 def exclude(assessment_id):
     storage.update_assessment(assessment_id, excluded=True, included=False)
+    return back()
+
+
+@app.route("/completed")
+def completed():
+    return render_template("completed.html", view=load_view(show_ec=True))
+
+
+@app.post("/assessment/<assessment_id>/tick")
+def tick(assessment_id):
+    """Manual done / not done, for exams and anything Moodle can't report."""
+    storage.update_assessment(assessment_id, manual_done=request.form.get("done") == "1")
     return back()
 
 

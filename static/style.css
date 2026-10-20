@@ -165,6 +165,8 @@ button, .button {
 }
 button.secondary, .button.secondary { background: var(--panel-2); color: var(--text); border-color: var(--border); }
 button:hover, .button:hover { filter: brightness(1.12); text-decoration: none; }
+.actions { display: flex; gap: 8px; align-items: center; }
+.done-label { font-size: 13px; font-weight: 600; color: var(--low); padding: 0 6px; }
 .button.active { border-color: var(--accent); color: var(--accent); }
 .module-intro { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .module-intro p { margin: 0; }

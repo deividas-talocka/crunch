@@ -6,6 +6,8 @@ and returns plain Python data.
 import html
 import os
 import re
+import time
+from concurrent.futures import ThreadPoolExecutor
 
 import requests
 import truststore
@@ -98,12 +100,36 @@ def _plain(intro):
     return _clean(re.sub(r"<[^>]+>", " ", intro or ""))
 
 
-def fetch_snapshot():
+def quiz_finished(quiz_id):
+    return bool(call("mod_quiz_get_user_attempts", quizid=quiz_id, status="finished").get("attempts"))
+
+
+def assignment_submitted(assign_id):
+    attempt = call("mod_assign_get_submission_status", assignid=assign_id).get("lastattempt") or {}
+    submission = attempt.get("submission") or attempt.get("teamsubmission") or {}
+    return submission.get("status") == "submitted"
+
+
+def _completed(item):
+    """Ask Moodle whether I've done this one. If Moodle won't say, treat it as not done
+    (the manual tick still works)."""
+    try:
+        if item["kind"] == "quiz":
+            return quiz_finished(item["moodle_id"])
+        return assignment_submitted(item["moodle_id"])
+    except MoodleError:
+        return False
+
+
+def fetch_snapshot(module_pattern=None):
     """Everything the app needs from Moodle, as plain data:
     {"courses": [{id, name}], "assessments": [{id, course_id, name, kind, open, close, completed}]}
     Times are Unix timestamps, or None when Moodle has no date set.
+    module_pattern (a regex) limits it to courses whose name looks like a module.
     """
     courses = [{"id": c["id"], "name": _clean(c["fullname"])} for c in current_courses()]
+    if module_pattern:
+        courses = [c for c in courses if re.match(module_pattern, c["name"])]
     ids = [c["id"] for c in courses]
     found = []
     if ids:
@@ -121,4 +147,12 @@ def fetch_snapshot():
                 "open": a.get("allowsubmissionsfromdate") or None, "close": a.get("duedate") or None,
                 "completed": False,
             })
+
+    # Completion: one call per assessment, so only ask about ones that have opened,
+    # and ask several at once.
+    now = time.time()
+    started = [item for item in found if not item["open"] or item["open"] <= now]
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        for item, done in zip(started, pool.map(_completed, started)):
+            item["completed"] = done
     return {"courses": courses, "assessments": found}
