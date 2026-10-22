@@ -58,14 +58,15 @@
   <div class="panel outlook">
     <div class="outlook-main">
       <span class="muted">On track for</span>
-      <span class="outlook-class band-{{ o.on_track.short|replace(':', '')|lower }}">{{ o.on_track.name }}</span>
+      <span class="outlook-class band-{{ o.on_track.short|replace(':', '')|lower }}">{{ o.on_track.name }}{% if o.on_track.short != 'Fail' %} ({{ o.on_track.short }}){% endif %}</span>
+      {% if o.on_track.descriptor %}<span class="outlook-descriptor">{{ o.on_track.descriptor }}</span>{% endif %}
       <span class="muted">{{ o.average }}% average on marked work so far</span>
     </div>
     <ul class="outlook-bands">
       {% for b in o.requirements %}
       <li class="{{ 'current' if b.short == o.on_track.short }}">
         <span class="band-name">{{ b.short }}</span>
-        <span class="band-min">{{ b.min }}%+</span>
+        <span class="band-min">{{ b.min }}%+{% if b.descriptor %} · {{ b.descriptor }}{% endif %}</span>
         <span class="band-need {{ b.status|replace(' ', '-') }}">
           {% if b.status == 'secured' %}✓ secured{% elif b.status == 'out of reach' %}out of reach{% else %}need {{ b.needed }}% avg on the rest{% endif %}
         </span>
