@@ -44,6 +44,8 @@ Learner agreed to Python + Flask (tradeoff accepted: some HTML/CSS needed for th
 - Start: `python app.py`, then open `http://localhost:5000`.
 - Demo recording: screen-record the browser — dashboard, module view (enter a weight, priority colour changes), EC toggle, add exam, then complete/reload to show it move to Completed.
 - **No deployment** — the app holds a personal Moodle key; a public site would expose it. Submission = demo video + public GitHub repo (without `.env` or `data/`).
+- **Public repository:** https://github.com/deividas-talocka/crunch (published in `6-ship`; checked signed-out: public, no `.env`, `data/`, learner profile or course folders).
+- **Demo video:** _to be added once recorded and uploaded._
 
 ## Look and Feel
 From `prd.md > Look and Feel`:
