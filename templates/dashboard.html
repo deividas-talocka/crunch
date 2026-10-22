@@ -54,7 +54,7 @@
 {% if view.outlook %}
 {% set o = view.outlook %}
 <section>
-  <h2 class="section-title">Grade outlook</h2>
+  <h2 class="section-title">Grade outlook{% if view.year_of_study %} · Year {{ view.year_of_study }}{% endif %}</h2>
   <div class="panel outlook">
     <div class="outlook-main">
       <span class="muted">On track for</span>
@@ -73,7 +73,7 @@
       </li>
       {% endfor %}
     </ul>
-    <p class="outlook-note muted">An estimate from this year's {{ o.modules }} modules (each counted equally), based on {{ '%g' % o.marked_share }}% of this year's marks so far. Your actual degree class depends on your university's rules, such as year weightings and module credits.</p>
+    <p class="outlook-note muted">An estimate for {% if view.year_of_study %}Year {{ view.year_of_study }}{% else %}this year{% endif %} from your {{ o.modules }} current modules (each counted equally), based on {{ '%g' % o.marked_share }}% of this year's marks so far. It shows how this year is going, not your final degree class, which also depends on your other years, how your university weights each year, and module credits.</p>
   </div>
 </section>
 {% endif %}

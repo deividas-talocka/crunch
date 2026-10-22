@@ -1,6 +1,7 @@
 {
   "module_code_pattern": "^[A-Z]{2}\\d{4}",
   "pass_mark": 40,
+  "year_of_study": 2,
   "classifications": [
     {"name": "First Class Honours", "short": "1st", "min": 70, "descriptor": "Excellent"},
     {"name": "Second Class Honours, Upper Division", "short": "2:1", "min": 60, "descriptor": "Very good"},

@@ -45,6 +45,7 @@ def load_view(show_ec=False):
     view["updated"] = datetime.fromtimestamp(fetched).strftime("%a %d %b, %H:%M") if fetched else None
     view["github_url"] = settings.get("github_url") or None
     view["linkedin_url"] = settings.get("linkedin_url") or None
+    view["year_of_study"] = settings.get("year_of_study")
     view["scans"] = notes.get("scans", {})
     return view
 
