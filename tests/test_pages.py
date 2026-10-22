@@ -91,7 +91,7 @@ def test_grades_on_dashboard_completed_and_typed_exam_mark(client):
     storage.update_assessment("assign-3", weight=40)
     try:
         dash = client.get("/").get_data(as_text=True)
-        assert "So far: <strong>28</strong> of 40% · 70% average" in dash
+        assert "<strong>28%</strong> of 100% so far" in dash and "12% more to pass (40%)" in dash
         assert "<strong>70%</strong>" in client.get("/completed").get_data(as_text=True)
         client.post("/assessment/exam-1/grade", data={"grade": "65"})
         exam = client.get("/assessment/exam-1").get_data(as_text=True)

@@ -219,7 +219,8 @@ def test_marks_so_far_from_grades_and_weights():
     snapshot["assessments"][2]["grade"] = 60.0   # Coursework 1, 45%
     notes = {"assessments": {"quiz-1": {"weight": 2.5}, "quiz-2": {"weight": 2.5}, "assign-3": {"weight": 45}}}
     marks = tracker.build_view(snapshot, notes, SETTINGS, now=NOW)["modules"][0]["marks"]
-    assert marks == {"earned": 29.0, "assessed": 47.5, "average": 61, "count": 2}  # 2.0 + 27.0
+    assert marks == {"earned": 29.0, "assessed": 47.5, "average": 61, "count": 2,  # 2.0 + 27.0
+                     "pass_mark": 40, "to_pass": 11.0}
 
 
 def test_no_grades_means_no_marks_and_typed_mark_counts():
@@ -228,7 +229,7 @@ def test_no_grades_means_no_marks_and_typed_mark_counts():
     notes = {"exams": [{"id": "exam-1", "course_id": 1, "name": "IN2013 Exam", "close": None, "weight": 70}],
              "assessments": {"exam-1": {"manual_grade": 65}}}
     marks = tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)["modules"][0]["marks"]
-    assert marks["earned"] == 45.5 and marks["average"] == 65
+    assert marks["earned"] == 45.5 and marks["average"] == 65 and marks["to_pass"] == 0  # passed
 
 
 def test_unweighted_rows_need_weight():

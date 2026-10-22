@@ -78,16 +78,17 @@ def _month_key(timestamp):
     return (d.year, d.month)
 
 
-def module_marks(rows):
-    """Marks earned so far in a module from graded, weighted assessments (EC versions left out).
-    e.g. Quiz 1 at 80% worth 2.5% -> {"earned": 2.0, "assessed": 2.5, "average": 80}. None if nothing graded."""
+def module_marks(rows, pass_mark=40):
+    """Marks earned so far in a module, out of the whole module (100%), from graded, weighted
+    assessments (EC versions left out). e.g. Quiz 1 at 80% worth 2.5% -> earned 2.0 of 100,
+    38.0 more to reach a 40% pass. None if nothing is graded yet."""
     graded = [r for r in rows if not r["ec"] and r["grade"] is not None and r["weight"]]
     if not graded:
         return None
-    earned = sum(r["weight"] * r["grade"] / 100 for r in graded)
-    assessed = sum(r["weight"] for r in graded)
-    return {"earned": round(earned, 1), "assessed": round(assessed, 1),
-            "average": round(earned / assessed * 100), "count": len(graded)}
+    earned = round(sum(r["weight"] * r["grade"] / 100 for r in graded), 1)
+    assessed = round(sum(r["weight"] for r in graded), 1)
+    return {"earned": earned, "assessed": assessed, "average": round(earned / assessed * 100),
+            "count": len(graded), "pass_mark": pass_mark, "to_pass": round(max(pass_mark - earned, 0), 1)}
 
 
 def _hint_key(month, now):
@@ -253,7 +254,7 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
     }
 
     for module in modules.values():
-        module["marks"] = module_marks(module["items"])
+        module["marks"] = module_marks(module["items"], settings.get("pass_mark", 40))
 
     overdue_modules = {r["module_id"] for r in overdue}
     for module in modules.values():
