@@ -81,13 +81,11 @@ def _month_key(timestamp):
 def module_marks(rows, pass_mark=40):
     """Marks earned so far in a module, out of the whole module (100%), from graded, weighted
     assessments (EC versions left out). e.g. Quiz 1 at 80% worth 2.5% -> earned 2.0 of 100,
-    38.0 more to reach a 40% pass. None if nothing is graded yet."""
+    38.0 more to reach a 40% pass. With nothing graded yet: 0 earned, the full pass mark to go."""
     graded = [r for r in rows if not r["ec"] and r["grade"] is not None and r["weight"]]
-    if not graded:
-        return None
     earned = round(sum(r["weight"] * r["grade"] / 100 for r in graded), 1)
     assessed = round(sum(r["weight"] for r in graded), 1)
-    return {"earned": earned, "assessed": assessed, "average": round(earned / assessed * 100),
+    return {"earned": earned, "assessed": assessed, "average": round(earned / assessed * 100) if assessed else None,
             "count": len(graded), "pass_mark": pass_mark, "to_pass": round(max(pass_mark - earned, 0), 1)}
 
 

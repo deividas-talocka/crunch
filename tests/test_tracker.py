@@ -225,7 +225,8 @@ def test_marks_so_far_from_grades_and_weights():
 
 def test_no_grades_means_no_marks_and_typed_mark_counts():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
-    assert view["modules"][0]["marks"] is None
+    marks = view["modules"][0]["marks"]
+    assert (marks["earned"], marks["to_pass"], marks["count"], marks["average"]) == (0, 40, 0, None)
     notes = {"exams": [{"id": "exam-1", "course_id": 1, "name": "IN2013 Exam", "close": None, "weight": 70}],
              "assessments": {"exam-1": {"manual_grade": 65}}}
     marks = tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)["modules"][0]["marks"]

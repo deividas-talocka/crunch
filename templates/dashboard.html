@@ -32,9 +32,9 @@
       <div class="module-title">{{ m.title[m.code|length:] }}</div>
       <div class="module-left"><strong>{{ m.left }}</strong> left</div>
       {% if m.marks %}
-      <div class="module-marks" title="From {{ m.marks.count }} graded assessment{{ 's' if m.marks.count != 1 }} worth {{ '%g' % m.marks.assessed }}% of the module ({{ m.marks.average }}% average)">
+      <div class="module-marks" title="{% if m.marks.count %}From {{ m.marks.count }} graded assessment{{ 's' if m.marks.count != 1 }} worth {{ '%g' % m.marks.assessed }}% of the module ({{ m.marks.average }}% average){% else %}No marks released yet{% endif %}">
         <span class="marks-bar{{ ' passed' if not m.marks.to_pass }}">
-          <span class="marks-fill" style="width: {{ [m.marks.earned, 100]|min }}%"></span>
+          {% if m.marks.earned %}<span class="marks-fill" style="width: {{ [m.marks.earned, 100]|min }}%"></span>{% endif %}
           <span class="pass-line" style="left: {{ m.marks.pass_mark }}%" title="Pass mark {{ m.marks.pass_mark }}%"></span>
         </span>
         <span class="marks-text">
