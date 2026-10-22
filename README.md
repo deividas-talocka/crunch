@@ -85,3 +85,7 @@ scripts/            connection check and token helper
 tests/              tests for tracker.py
 devpost/            planning documents (scope, PRD, spec, build checklist)
 ```
+
+## Licence
+
+MIT — see [LICENSE](LICENSE).
