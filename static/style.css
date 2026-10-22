@@ -339,3 +339,5 @@ main { padding-right: 64px; }
 .band-need.secured { color: var(--low); font-weight: 600; }
 .band-need.out-of-reach { color: #ff7b78; }
 .outlook-note { grid-column: 1 / -1; margin: 0; font-size: 12px; }
+
+.grade-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #6fd38f; background: rgba(76, 175, 106, .15); border: 1px solid rgba(76, 175, 106, .35); }

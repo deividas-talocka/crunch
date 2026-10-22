@@ -94,6 +94,7 @@ def test_grades_on_dashboard_completed_and_typed_exam_mark(client):
         assert "<strong>28%</strong> of 100% so far" in dash and "12% more to pass (40%)" in dash
         assert "On track for" in dash and "1st class honours" in dash  # 28 of 40 marked = 70% average
         assert "<strong>70%</strong>" in client.get("/completed").get_data(as_text=True)
+        assert '<span class="grade-pill">70%</span>' in client.get("/module/1").get_data(as_text=True)
         client.post("/assessment/exam-1/grade", data={"grade": "65"})
         exam = client.get("/assessment/exam-1").get_data(as_text=True)
         assert '<span class="stat-value">65%</span>' in exam and "45.5 of 70% of the module" in exam
