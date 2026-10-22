@@ -51,6 +51,32 @@
   </div>
 </section>
 
+{% if view.outlook %}
+{% set o = view.outlook %}
+<section>
+  <h2 class="section-title">Grade outlook</h2>
+  <div class="panel outlook">
+    <div class="outlook-main">
+      <span class="muted">On track for</span>
+      <span class="outlook-class band-{{ o.on_track.short|replace(':', '')|lower }}">{{ o.on_track.name }}</span>
+      <span class="muted">{{ o.average }}% average on marked work so far</span>
+    </div>
+    <ul class="outlook-bands">
+      {% for b in o.requirements %}
+      <li class="{{ 'current' if b.short == o.on_track.short }}">
+        <span class="band-name">{{ b.short }}</span>
+        <span class="band-min">{{ b.min }}%+</span>
+        <span class="band-need {{ b.status|replace(' ', '-') }}">
+          {% if b.status == 'secured' %}✓ secured{% elif b.status == 'out of reach' %}out of reach{% else %}need {{ b.needed }}% avg on the rest{% endif %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+    <p class="outlook-note muted">An estimate from this year's {{ o.modules }} modules (each counted equally), based on {{ '%g' % o.marked_share }}% of this year's marks so far. Your actual degree class depends on your university's rules, such as year weightings and module credits.</p>
+  </div>
+</section>
+{% endif %}
+
 {% if view.overdue %}
 <section>
   <h2 class="section-title overdue-title">Overdue · {{ view.overdue|length }}</h2>

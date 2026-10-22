@@ -233,6 +233,36 @@ def test_no_grades_means_no_marks_and_typed_mark_counts():
     assert marks["earned"] == 45.5 and marks["average"] == 65 and marks["to_pass"] == 0  # passed
 
 
+def _module(earned, assessed):
+    return {"marks": {"earned": earned, "assessed": assessed}}
+
+
+def test_grade_outlook_on_track_and_requirements():
+    bands = SETTINGS["classifications"]
+    # Four modules; one 2.5% quiz marked at 100% so far.
+    o = tracker.grade_outlook([_module(2.5, 2.5)] + [_module(0, 0)] * 3, bands)
+    assert o["on_track"]["short"] == "1st" and o["average"] == 100 and o["marked_share"] == 0.6
+    need = {b["short"]: (b["status"], b["needed"]) for b in o["requirements"]}
+    # 1st: 280 of 400 marks needed, 2.5 earned, 397.5 left -> 70%
+    assert need == {"1st": ("need", 70), "2:1": ("need", 60), "2:2": ("need", 50), "3rd": ("need", 40)}
+
+
+def test_grade_outlook_secured_and_out_of_reach():
+    bands = SETTINGS["classifications"]
+    o = tracker.grade_outlook([_module(45, 50), _module(20, 50)], bands)  # 65 of 100 marked, 65% avg
+    assert o["on_track"]["short"] == "2:1"
+    need = {b["short"]: b["status"] for b in o["requirements"]}
+    assert need["3rd"] == "need"  # 80 marks needed of 200, 65 earned, 100 left
+    o = tracker.grade_outlook([_module(30, 90)], bands)  # 30 earned, 10 left: 1st/2:1/2:2 impossible
+    need = {b["short"]: b["status"] for b in o["requirements"]}
+    assert (o["on_track"]["short"], need["1st"], need["3rd"]) == ("Fail", "out of reach", "need")
+    assert tracker.grade_outlook([_module(45, 45)], bands)["requirements"][-1]["status"] == "secured"
+
+
+def test_no_outlook_until_something_is_marked():
+    assert tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)["outlook"] is None
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])

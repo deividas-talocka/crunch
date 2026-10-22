@@ -12,6 +12,7 @@ Moodle's dashboard timeline mixes everything together: last year's modules, EC /
 - **Status lights:** green means open now, red means not open yet.
 - **Completion is detected from Moodle.** A finished quiz attempt or a submitted coursework moves the assessment to **Completed**. Exams, vivas and coursework that Moodle doesn't have yet are found in your module files and added automatically. You set their date when it's announced, and tick off exams yourself.
 - **Marks so far:** each module shows the marks you've earned from released grades and weights (e.g. "2.5% of 100% so far · 37.5% more to pass (40%)", with the pass mark marked on a progress bar; pass mark set in settings.json). Exam and viva marks can be entered by hand.
+- **Grade outlook:** "On track for 1st class honours" (or 2:1, 2:2, 3rd, Fail) from your marks so far, with the average you'd need on the rest for each class. An estimate from this year's modules, not your official degree class.
 - **Assessment pages:** click any assessment for its details, a countdown, Moodle's description and an Open in Moodle link.
 - **Overdue:** anything past its deadline and not done shows in red above the months.
 - **Ask Crunch:** a free helper in a sidebar answers "What should I focus on this week?", "What's most important?" and "How am I doing?" from your own data. No AI service, so nothing leaves your computer.

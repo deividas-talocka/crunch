@@ -1,6 +1,13 @@
 {
   "module_code_pattern": "^[A-Z]{2}\\d{4}",
   "pass_mark": 40,
+  "classifications": [
+    {"name": "1st class honours", "short": "1st", "min": 70},
+    {"name": "Upper second (2:1)", "short": "2:1", "min": 60},
+    {"name": "Lower second (2:2)", "short": "2:2", "min": 50},
+    {"name": "Third class (3rd)", "short": "3rd", "min": 40},
+    {"name": "Fail", "short": "Fail", "min": 0}
+  ],
   "github_url": "https://github.com/deividas-talocka",
   "linkedin_url": "https://www.linkedin.com/in/deividas-talocka/",
   "ec_keywords": ["extra time", "ssp", "extenuating circumstances", "extension", "extensions"],

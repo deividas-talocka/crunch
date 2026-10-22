@@ -89,6 +89,41 @@ def module_marks(rows, pass_mark=40):
             "count": len(graded), "pass_mark": pass_mark, "to_pass": round(max(pass_mark - earned, 0), 1)}
 
 
+def grade_outlook(modules, classifications):
+    """Which degree class this year's marks are on track for, and what's needed for each.
+
+    Every module counts equally (100 marks each). On track = the band your average on marked
+    work falls in. For each band: the average needed on everything not yet marked to finish the
+    year at that band's minimum - "secured" if already guaranteed, "out of reach" if over 100%.
+    None until something is marked.
+    """
+    if not modules:
+        return None
+    earned = sum(m["marks"]["earned"] for m in modules)
+    assessed = sum(m["marks"]["assessed"] for m in modules)
+    if not assessed:
+        return None
+    possible = 100 * len(modules)
+    remaining = possible - assessed
+    average = earned / assessed * 100
+    bands = sorted(classifications, key=lambda b: -b["min"])
+    on_track = next(b for b in bands if average >= b["min"])
+    requirements = []
+    for band in bands:
+        if band["min"] <= 0:
+            continue  # nothing to achieve for "Fail"
+        needed_marks = band["min"] / 100 * possible - earned
+        if needed_marks <= 0:
+            status, needed = "secured", None
+        elif remaining <= 0 or needed_marks > remaining:
+            status, needed = "out of reach", None
+        else:
+            status, needed = "need", round(needed_marks / remaining * 100)
+        requirements.append({**band, "status": status, "needed": needed})
+    return {"on_track": on_track, "average": round(average), "marked_share": round(assessed / possible * 100, 1),
+            "modules": len(modules), "requirements": requirements}
+
+
 def _hint_key(month, now):
     """A month named in a module file ("exam in January") -> its next (year, month)."""
     if not month:
@@ -259,7 +294,10 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
         # Shown on the dashboard only while there's something left to do in it.
         module["active"] = module["left"] > 0 or module["id"] in overdue_modules
 
+    outlook = grade_outlook(list(modules.values()), settings.get("classifications", []))
+
     return {
+        "outlook": outlook,
         "stats": stats,
         "modules": sorted(modules.values(), key=lambda m: m["code"]),
         "months": months,
