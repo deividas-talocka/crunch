@@ -78,10 +78,10 @@ def test_module_page_links_to_moodle_course(client, monkeypatch):
 def test_setting_a_date_moves_it_into_the_months(client, monkeypatch):
     monkeypatch.setattr(app_module, "MONTHS_SHOWN", 12)
     before = client.get("/").get_data(as_text=True)
-    assert "IN2013 Exam" in before.split("Coming up — date to confirm")[1]
+    assert "IN2013 Exam" in before.split("Coming up — dates to be confirmed")[1]
     client.post("/exam/exam-1/date", data={"close": "2099-03-14T09:30"})
     after = client.get("/").get_data(as_text=True)
-    assert "Coming up — date to confirm" not in after
+    assert "Coming up — dates to be confirmed" not in after
     march = after.split("March 2099")[1]
     assert "IN2013 Exam" in march and "Sat 14 Mar" in march
 
@@ -91,7 +91,7 @@ def test_grades_on_dashboard_completed_and_typed_exam_mark(client):
     storage.update_assessment("assign-3", weight=40)
     try:
         dash = client.get("/").get_data(as_text=True)
-        assert "<strong>28%</strong> of 100% so far" in dash and "12% more to pass (40%)" in dash
+        assert "<strong>28%</strong> of 100% so far" in dash and "12% more needed to pass (40%)" in dash
         assert "On track for" in dash and "First Class Honours (1st)" in dash and "Excellent" in dash  # 28 of 40 marked = 70% average
         assert "<strong>70%</strong>" in client.get("/completed").get_data(as_text=True)
         assert '<span class="grade-pill">70%</span>' in client.get("/module/1").get_data(as_text=True)
@@ -136,5 +136,5 @@ def test_finished_months_disappear_and_all_done_shows_nothing_coming_up(client):
 
 def test_date_to_confirm_section_is_below_the_months(client):
     html = client.get("/").get_data(as_text=True)
-    assert html.index("Upcoming by month") < html.index("Coming up — date to confirm")
+    assert html.index("Upcoming by month") < html.index("Coming up — dates to be confirmed")
     assert "Expected January" in html

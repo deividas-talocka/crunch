@@ -13,7 +13,7 @@
       {% if r.priority %}<span class="badge badge-{{ r.priority }}">{{ r.priority|capitalize }} priority</span>
       {% elif not r.optional_reason %}<span class="needs-weight">⚠ Needs weight</span>{% endif %}
       {% if r.ec %}<span class="tag-ec">EC / Extra time</span>{% endif %}
-      {% if r.auto %}<span class="tag-ec">{{ 'not on Moodle yet' if r.type in ['Coursework', 'Assessment'] else 'found in your files' }}</span>{% endif %}
+      {% if r.auto %}<span class="tag-ec">{{ 'Not on Moodle yet' if r.type in ['Coursework', 'Assessment'] else 'Found in your files' }}</span>{% endif %}
       {% if r.optional_reason %}<span class="tag-ec">Optional — {{ r.optional_reason }}</span>{% endif %}
       {% if r.completed %}<span class="done-label">✓ {{ 'Done on Moodle' if r.moodle_completed else 'Done' }}</span>{% endif %}
     </div>
@@ -32,7 +32,7 @@
   </div>
   <div class="stat">
     <span class="stat-next">{{ r.close_full or 'Date TBC' }}</span>
-    <span class="stat-label">Closes{% if r.countdown %} · <strong>{{ r.countdown }}</strong>{% endif %}</span>
+    <span class="stat-label">Deadline{% if r.countdown %} · <strong>{{ r.countdown|capitalize }}</strong>{% endif %}</span>
   </div>
   {% if r.grade is not none or r.kind == 'exam' %}
   <div class="stat">

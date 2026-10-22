@@ -4,7 +4,7 @@
 <p><a href="{{ url_for('dashboard') }}">← Dashboard</a></p>
 <h1 class="page-title"><span class="module-code">{{ module.code }}</span> {{ module.title[module.code|length:] }}</h1>
 <div class="module-intro">
-  <p class="muted">{{ module.left }} left · Weights are found automatically from this module's Moodle page and files — use "edit" to correct one, or mark optional work "Doesn't count".</p>
+  <p class="muted">{{ module.left }} left · Weights are found automatically from this module's Moodle page and files — use "Edit" to correct one, or mark optional work "Doesn't count".</p>
   <div class="detail-actions">
     <a class="button secondary{{ ' active' if show_ec }}" href="?{{ '' if show_ec else 'ec=1' }}">{{ 'Hide EC versions' if show_ec else 'Show EC versions' }}</a>
     {% if moodle_url %}<a class="button" href="{{ moodle_url }}" target="_blank" rel="noopener">Open module in Moodle ↗</a>{% endif %}
@@ -19,13 +19,13 @@
     <tbody>
       {% for r in module["items"] %}
       <tr class="{{ 'ec-row' if r.ec }}">
-        <td>{% if r.status != 'closed' and not r.completed %}<span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{% endif %}<a class="row-link" href="{{ url_for('assessment', assessment_id=r.id) }}">{{ r.name }}</a>{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}{% if r.auto %} <span class="tag-ec">{{ 'not on Moodle yet' if r.type in ['Coursework', 'Assessment'] else 'found in your files' }}</span>{% endif %}</td>
+        <td>{% if r.status != 'closed' and not r.completed %}<span class="light light-{{ r.status }}" title="{{ 'Open now' if r.status == 'open' else 'Not open yet' }}"></span>{% endif %}<a class="row-link" href="{{ url_for('assessment', assessment_id=r.id) }}">{{ r.name }}</a>{% if r.ec %} <span class="tag-ec">EC / Extra time</span>{% endif %}{% if r.auto %} <span class="tag-ec">{{ 'Not on Moodle yet' if r.type in ['Coursework', 'Assessment'] else 'Found in your files' }}</span>{% endif %}</td>
         <td>{{ r.type }}</td>
         <td>{{ r.open_str }}</td>
         <td>
           {% if r.kind == 'exam' %}
           {{ r.close_str }}
-          <details class="edit"><summary>{{ 'set date' if r.date_tbc else 'change date' }}</summary>
+          <details class="edit"><summary>{{ 'Set date' if r.date_tbc else 'Change date' }}</summary>
             <form method="post" action="{{ url_for('set_exam_date', exam_id=r.id) }}" class="inline">
               <input type="datetime-local" name="close" required>
               <button type="submit">Save</button>
@@ -44,8 +44,8 @@
           {% if r.weight is not none %}
           <div class="weight-found">
             <strong>{{ r.weight }}%</strong>
-            <span class="weight-source">{{ ('from ' ~ r.weight_source) if r.weight_source else 'entered by you' }}</span>
-            <details class="edit"><summary>edit</summary>{{ weight_form }}</details>
+            <span class="weight-source">{{ ('From ' ~ r.weight_source) if r.weight_source else 'Entered by you' }}</span>
+            <details class="edit"><summary>Edit</summary>{{ weight_form }}</details>
           </div>
           {% else %}
           {{ weight_form }}

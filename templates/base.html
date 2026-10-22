@@ -59,7 +59,7 @@
       <button class="helper-close" type="button" aria-label="Close">×</button>
     </div>
     <div class="helper-chat" aria-live="polite">
-      <div class="bubble bot">Hi! Pick a question and I'll look through your assessments.</div>
+      <div class="bubble bot">Hi! Pick a question and I'll look through your assessments for you.</div>
     </div>
     <div class="helper-questions">
       {% for a in view.helper %}<button type="button" class="secondary" data-key="{{ a.key }}">{{ a.question }}</button>{% endfor %}
