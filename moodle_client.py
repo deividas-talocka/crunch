@@ -100,6 +100,24 @@ def _plain(intro):
     return _clean(re.sub(r"<[^>]+>", " ", intro or ""))
 
 
+def grades(course_id, user_id):
+    """My released grades in one course, as {("quiz", 123): 80.0, ("assign", 45): 65.5} (percent)."""
+    found = {}
+    report = call("gradereport_user_get_grade_items", courseid=course_id, userid=user_id)
+    for grade_item in report["usergrades"][0]["gradeitems"]:
+        raw, top = grade_item.get("graderaw"), grade_item.get("grademax")
+        if grade_item.get("itemtype") == "mod" and raw is not None and top:
+            found[(grade_item.get("itemmodule"), grade_item.get("iteminstance"))] = round(raw / top * 100, 1)
+    return found
+
+
+def _course_grades(course_id, user_id):
+    try:
+        return grades(course_id, user_id)
+    except MoodleError:
+        return {}  # grades not shared for this course: Crunch works without them
+
+
 def quiz_finished(quiz_id):
     return bool(call("mod_quiz_get_user_attempts", quizid=quiz_id, status="finished").get("attempts"))
 
@@ -158,4 +176,12 @@ def fetch_snapshot(module_pattern=None):
     with ThreadPoolExecutor(max_workers=8) as pool:
         for item, done in zip(started, pool.map(_completed, started)):
             item["completed"] = done
+        # Released grades, one call per module.
+        if ids:
+            user_id = site_info()["userid"]
+            course_grades = {}
+            for course_id, result in zip(ids, pool.map(lambda c: _course_grades(c, user_id), ids)):
+                course_grades.update(result)
+            for item in found:
+                item["grade"] = course_grades.get((item["kind"], item["moodle_id"]))
     return {"courses": courses, "assessments": found}

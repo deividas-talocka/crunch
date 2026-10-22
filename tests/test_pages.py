@@ -86,6 +86,22 @@ def test_setting_a_date_moves_it_into_the_months(client, monkeypatch):
     assert "IN2013 Exam" in march and "Sat 14 Mar" in march
 
 
+def test_grades_on_dashboard_completed_and_typed_exam_mark(client):
+    SNAPSHOT["assessments"][2]["grade"] = 70.0  # Coursework 1, completed on Moodle
+    storage.update_assessment("assign-3", weight=40)
+    try:
+        dash = client.get("/").get_data(as_text=True)
+        assert "So far: <strong>28</strong> of 40% · 70% average" in dash
+        assert "<strong>70%</strong>" in client.get("/completed").get_data(as_text=True)
+        client.post("/assessment/exam-1/grade", data={"grade": "65"})
+        exam = client.get("/assessment/exam-1").get_data(as_text=True)
+        assert '<span class="stat-value">65%</span>' in exam and "45.5 of 70% of the module" in exam
+        client.post("/assessment/exam-1/grade", data={"grade": ""})  # clearing it
+        assert '<span class="stat-value">65%</span>' not in client.get("/assessment/exam-1").get_data(as_text=True)
+    finally:
+        SNAPSHOT["assessments"][2].pop("grade")
+
+
 def test_overdue_section(client):
     storage.update_assessment("assign-3", manual_done=False)
     SNAPSHOT["assessments"][2]["completed"] = False

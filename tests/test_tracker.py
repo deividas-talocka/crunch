@@ -212,6 +212,25 @@ def test_days_left():
     assert tracker.days_left(ts(2026, 10, 19), now) == (None, None)  # past: shown as overdue instead
 
 
+def test_marks_so_far_from_grades_and_weights():
+    snapshot = {**SNAPSHOT, "assessments": [dict(a) for a in SNAPSHOT["assessments"]]}
+    snapshot["assessments"][0]["grade"] = 80.0   # Quiz 1, 2.5%
+    snapshot["assessments"][1]["grade"] = 100.0  # its Extra Time version: not mine, left out
+    snapshot["assessments"][2]["grade"] = 60.0   # Coursework 1, 45%
+    notes = {"assessments": {"quiz-1": {"weight": 2.5}, "quiz-2": {"weight": 2.5}, "assign-3": {"weight": 45}}}
+    marks = tracker.build_view(snapshot, notes, SETTINGS, now=NOW)["modules"][0]["marks"]
+    assert marks == {"earned": 29.0, "assessed": 47.5, "average": 61, "count": 2}  # 2.0 + 27.0
+
+
+def test_no_grades_means_no_marks_and_typed_mark_counts():
+    view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
+    assert view["modules"][0]["marks"] is None
+    notes = {"exams": [{"id": "exam-1", "course_id": 1, "name": "IN2013 Exam", "close": None, "weight": 70}],
+             "assessments": {"exam-1": {"manual_grade": 65}}}
+    marks = tracker.build_view(SNAPSHOT, notes, SETTINGS, now=NOW)["modules"][0]["marks"]
+    assert marks["earned"] == 45.5 and marks["average"] == 65
+
+
 def test_unweighted_rows_need_weight():
     view = tracker.build_view(SNAPSHOT, {}, SETTINGS, now=NOW)
     assert all(r["priority"] is None for month in view["months"] for r in month["rows"])

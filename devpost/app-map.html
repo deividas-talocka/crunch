@@ -104,6 +104,7 @@
   <ul>
     <li><strong>What counts as EC, optional, or a module</strong> → <code>settings.json</code> (keywords and the module-code pattern — no code changes needed).</li>
     <li><strong>Priority thresholds</strong> (≤10% Low, ≤50% Medium) → <code>tracker.py</code>, <code>def priority</code>.</li>
+    <li><strong>Marks so far</strong> → grades fetched in <code>moodle_client.py</code>, <code>def grades</code>; combined with weights in <code>tracker.py</code>, <code>def module_marks</code>.</li>
     <li><strong>How weights are read from files</strong> → <code>weight_finder.py</code>, <code>def find_weights</code> and <code>def match</code>.</li>
     <li><strong>What the helper says</strong> → <code>helper.py</code>; its panel and greeting → <code>templates/base.html</code> (search <code>Hi! Pick a question</code>).</li>
     <li><strong>Look and feel</strong> → <code>static/style.css</code> (colours are variables at the top: <code>--accent</code>, <code>--high</code>, …).</li>

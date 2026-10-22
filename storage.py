@@ -64,6 +64,13 @@ def set_exam_date(exam_id, close_ts):
         save_notes(notes)
 
 
+def clear_field(assessment_id, field):
+    with lock:
+        notes = load_notes()
+        notes["assessments"].get(assessment_id, {}).pop(field, None)
+        save_notes(notes)
+
+
 def update_assessment(assessment_id, **fields):
     """Set fields (weight, excluded, manual_done) on one assessment's notes and save."""
     with lock:

@@ -109,6 +109,17 @@ def set_weight(assessment_id):
     return back()
 
 
+@app.post("/assessment/<assessment_id>/grade")
+def set_grade(assessment_id):
+    """Type in my mark (percent) for something Moodle doesn't grade, like an exam. Empty clears it."""
+    mark = parse_weight(request.form.get("grade", ""))
+    if mark is None:
+        storage.clear_field(assessment_id, "manual_grade")
+    else:
+        storage.update_assessment(assessment_id, manual_grade=mark)
+    return back()
+
+
 @app.post("/assessment/<assessment_id>/exclude")
 def exclude(assessment_id):
     storage.update_assessment(assessment_id, excluded=True, included=False)

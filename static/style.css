@@ -311,3 +311,10 @@ main { padding-right: 64px; }
 .footer-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; }
 .footer-note { flex-basis: 100%; margin: 0; font-size: 12px; opacity: .75; }
 @media (max-width: 700px) { .footer { padding-right: 32px; } .footer::before { right: 32px; } }
+
+/* Marks so far */
+.module-marks { margin-top: 10px; font-size: 12px; color: var(--muted); }
+.module-marks strong { color: var(--text); }
+.marks-bar { display: block; height: 4px; margin-bottom: 6px; border-radius: 999px; background: var(--panel-2); overflow: hidden; }
+.marks-bar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent), #4caf6a); }
+.mark-form { margin-top: 14px; flex-wrap: wrap; align-items: center; gap: 10px; }

@@ -31,6 +31,12 @@
       <div class="module-code">{{ m.code }}</div>
       <div class="module-title">{{ m.title[m.code|length:] }}</div>
       <div class="module-left"><strong>{{ m.left }}</strong> left</div>
+      {% if m.marks %}
+      <div class="module-marks" title="From {{ m.marks.count }} graded assessment{{ 's' if m.marks.count != 1 }}">
+        <span class="marks-bar"><span style="width: {{ m.marks.average }}%"></span></span>
+        So far: <strong>{{ '%g' % m.marks.earned }}</strong> of {{ '%g' % m.marks.assessed }}% · {{ m.marks.average }}% average
+      </div>
+      {% endif %}
     </a>
     {% else %}
     <p class="muted">{{ 'Every module is done — nothing left to do. 🎉' if view.modules else 'No current modules found.' }}</p>

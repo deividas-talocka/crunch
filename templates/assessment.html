@@ -34,7 +34,21 @@
     <span class="stat-next">{{ r.close_full or 'Date TBC' }}</span>
     <span class="stat-label">Closes{% if r.countdown %} · <strong>{{ r.countdown }}</strong>{% endif %}</span>
   </div>
+  {% if r.grade is not none or r.kind == 'exam' %}
+  <div class="stat">
+    <span class="stat-value">{{ ('%g' % r.grade ~ '%') if r.grade is not none else '—' }}</span>
+    <span class="stat-label">Your mark{% if r.grade is not none and r.weight %} · {{ '%g' % (r.weight * r.grade / 100)|round(1) }} of {{ '%g' % r.weight }}% of the module{% endif %}{% if r.grade_typed %} · entered by you{% elif r.grade is not none %} · from Moodle{% endif %}</span>
+  </div>
+  {% endif %}
 </div>
+
+{% if r.kind == 'exam' %}
+<form method="post" action="{{ url_for('set_grade', assessment_id=r.id) }}" class="inline mark-form">
+  <label class="muted" for="grade">Got your mark? Moodle doesn't record {{ r.type|lower }} marks, so enter it here (%):</label>
+  <input id="grade" name="grade" type="number" step="any" min="0" max="100" value="{{ '%g' % r.grade if r.grade is not none }}">
+  <button type="submit" class="secondary">Save mark</button>
+</form>
+{% endif %}
 
 {% if r.description or r.hint %}
 <h2 class="section-title spaced">{{ 'About this assessment' if r.description else 'From your module files' }}</h2>

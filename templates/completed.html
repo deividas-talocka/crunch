@@ -7,7 +7,7 @@
 
 <div class="panel">
   <table>
-    <thead><tr><th>Assessment</th><th>Type</th><th>Weight</th><th>Priority</th><th>Closed</th><th>How</th><th></th></tr></thead>
+    <thead><tr><th>Assessment</th><th>Type</th><th>Weight</th><th>Priority</th><th>Grade</th><th>Closed</th><th>How</th><th></th></tr></thead>
     <tbody>
       {% for r in view.completed %}
       <tr class="{{ 'ec-row' if r.ec }}">
@@ -15,6 +15,7 @@
         <td class="muted">{{ r.type }}</td>
         <td>{{ (r.weight|string + '%') if r.weight is not none else '—' }}</td>
         <td>{% if r.priority %}<span class="badge badge-{{ r.priority }}">{{ r.priority|capitalize }}</span>{% else %}—{% endif %}</td>
+        <td>{% if r.grade is not none %}<strong>{{ '%g' % r.grade }}%</strong>{% else %}<span class="muted">Not released</span>{% endif %}</td>
         <td><span class="close-date">{{ r.close_str }}</span><span class="close-time">{{ r.time_str }}</span></td>
         <td class="muted">{{ 'Done on Moodle' if r.moodle_completed else 'Ticked by you' }}</td>
         <td>

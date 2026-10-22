@@ -78,6 +78,18 @@ def _month_key(timestamp):
     return (d.year, d.month)
 
 
+def module_marks(rows):
+    """Marks earned so far in a module from graded, weighted assessments (EC versions left out).
+    e.g. Quiz 1 at 80% worth 2.5% -> {"earned": 2.0, "assessed": 2.5, "average": 80}. None if nothing graded."""
+    graded = [r for r in rows if not r["ec"] and r["grade"] is not None and r["weight"]]
+    if not graded:
+        return None
+    earned = sum(r["weight"] * r["grade"] / 100 for r in graded)
+    assessed = sum(r["weight"] for r in graded)
+    return {"earned": round(earned, 1), "assessed": round(assessed, 1),
+            "average": round(earned / assessed * 100), "count": len(graded)}
+
+
 def _hint_key(month, now):
     """A month named in a module file ("exam in January") -> its next (year, month)."""
     if not month:
@@ -180,6 +192,8 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
             "completed": bool(done), "moodle_completed": bool(item["completed"]),
             "manual_exam": bool(item.get("manual_exam")), "optional_reason": reason,
             "status": open_status(item["open"], item["close"], now_ts),
+            # My mark in percent: from Moodle, or typed in for exams and vivas.
+            "grade": note.get("manual_grade", item.get("grade")), "grade_typed": "manual_grade" in note,
             "date_tbc": item["kind"] == "exam" and not item["close"], "auto": item.get("auto", False),
             "hint": item.get("hint"),
             "description": item.get("description") or "", "url": item.get("url"),
@@ -237,6 +251,9 @@ def build_view(snapshot, notes, settings, show_ec=False, now=None):
         "this_month": len([r for r in this_month_rows if not r["ec"]]),
         "next": min((r for r in counted_upcoming if r["close"]), key=lambda r: r["close"], default=None),
     }
+
+    for module in modules.values():
+        module["marks"] = module_marks(module["items"])
 
     overdue_modules = {r["module_id"] for r in overdue}
     for module in modules.values():
