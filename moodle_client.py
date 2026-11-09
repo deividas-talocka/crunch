@@ -20,6 +20,9 @@ truststore.inject_into_ssl()
 load_dotenv()
 
 
+ATTEMPTS = 3
+
+
 class MoodleError(Exception):
     """Moodle could not be reached, or it refused the request."""
 
@@ -54,13 +57,17 @@ def call(function, **params):
         "moodlewsrestformat": "json",   # answer as JSON
         **_flatten(params),
     }
-    try:
-        response = requests.get(f"{url}/webservice/rest/server.php", params=query, timeout=20)
-        response.raise_for_status()
-        data = response.json()
-    except (requests.RequestException, ValueError) as exc:
-        # Don't include the request URL in the message: it contains the token.
-        raise MoodleError(f"Could not reach Moodle ({type(exc).__name__})") from None
+    # A single call occasionally stalls, so try again before reporting Moodle as unreachable.
+    for attempt in range(ATTEMPTS):
+        try:
+            response = requests.get(f"{url}/webservice/rest/server.php", params=query, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            break
+        except (requests.RequestException, ValueError) as exc:
+            if attempt == ATTEMPTS - 1:
+                # Don't include the request URL in the message: it contains the token.
+                raise MoodleError(f"Could not reach Moodle ({type(exc).__name__})") from None
     if isinstance(data, dict) and "exception" in data:
         raise MoodleError(f"{function}: {data.get('errorcode')} - {data.get('message')}")
     return data

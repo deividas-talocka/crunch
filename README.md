@@ -59,7 +59,7 @@ python scripts/check_moodle.py
 python app.py
 ```
 
-Open http://localhost:5000.
+Open http://localhost:5000. On Windows you can also double-click `start_crunch.bat`, which starts Crunch and opens it for you; `static/crunch.ico` is an icon for a desktop shortcut to it.
 
 ## Tests
 
